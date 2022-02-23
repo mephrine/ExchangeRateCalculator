@@ -36,7 +36,7 @@ class CurrencyModelTests: XCTestCase {
 
 extension CurrencyModel: Equatable {
 	public static func == (lhs: CurrencyModel, rhs: CurrencyModel) -> Bool {
-		lhs.timestamp == rhs.timestamp && Set(lhs.recipientCoutries).intersection(Set(rhs.recipientCoutries)).count == lhs.recipientCoutries.count
+		lhs.timestamp == rhs.timestamp && Set(lhs.recipientCoutries).symmetricDifference(Set(rhs.recipientCoutries)).count == 0
 	}
 }
 
