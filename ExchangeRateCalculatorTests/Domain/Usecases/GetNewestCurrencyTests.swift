@@ -30,4 +30,16 @@ class GetNewestCurrencyTests: XCTestCase {
 			XCTAssertEqual(result, expect)
 		}
 	}
+	
+	func test_shouldGetServerErrorWhenTheResultIsFailure() {
+		stubRespository.isSuccessful = false
+		
+		usecase.excute { response in
+			guard case let Result.failure(error) = response else {
+				fatalError()
+			}
+			
+			XCTAssert(error is ServerError)
+		}
+	}
 }
