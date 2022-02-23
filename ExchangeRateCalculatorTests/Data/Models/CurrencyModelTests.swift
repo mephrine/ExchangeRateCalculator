@@ -33,3 +33,19 @@ class CurrencyModelTests: XCTestCase {
 		XCTAssertEqual(result, expect)
 	}
 }
+
+extension CurrencyModel: Equatable {
+	public static func == (lhs: CurrencyModel, rhs: CurrencyModel) -> Bool {
+		lhs.timestamp == rhs.timestamp && Set(lhs.recipientCoutries).intersection(Set(rhs.recipientCoutries)).count == lhs.recipientCoutries.count
+	}
+}
+
+extension CurrencyModel.ChangedCurrencyModel: Hashable, Equatable {
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.quoteCurrency)
+	}
+	
+	public static func == (lhs: CurrencyModel.ChangedCurrencyModel, rhs: CurrencyModel.ChangedCurrencyModel) -> Bool {
+		lhs.mid == rhs.mid && lhs.mid == rhs.mid
+	}
+}
