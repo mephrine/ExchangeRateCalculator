@@ -11,7 +11,7 @@ import ExchangeRateCalculator
 
 class EnvironmentTests: XCTestCase {
 	func test_verifyBaseURLExistsInPlist() {
-		XCTAssert(Environment.baseURL is URL)
+		XCTAssert(Environment.baseURL is String)
 	}
 	
 	func test_verifyAuthorizationExistsInPlist() {

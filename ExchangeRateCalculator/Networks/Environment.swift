@@ -23,20 +23,17 @@ public enum Environment {
 	}()
 
 	// MARK: - Values
-	public static let baseURL: URL = {
+	public static let baseURL: String = {
 		guard let urlString = Environment.infoDictionary[Keys.baseURL] as? String else {
 			fatalError("BaseURL not set in plist for this environment")
 		}
-		guard let url = URL(string: urlString) else {
-			fatalError("baseURL is invalid")
-		}
-		return url
+		return urlString
 	}()
 
 	public static let authorization: String = {
-		guard let version = Environment.infoDictionary[Keys.authorization] as? String else {
+		guard let authorization = Environment.infoDictionary[Keys.authorization] as? String else {
 			fatalError("Authorization not set in plist for this environment")
 		}
-		return version
+		return authorization
 	}()
 }

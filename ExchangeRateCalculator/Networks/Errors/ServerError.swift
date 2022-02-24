@@ -11,4 +11,7 @@ enum ServerError: Error {
 	case network
 	case `internal`
 	case parse
+	case noData
+	case requestFailed
+	case invalidURL
 }
