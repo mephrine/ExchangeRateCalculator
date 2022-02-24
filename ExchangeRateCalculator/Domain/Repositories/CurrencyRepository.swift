@@ -8,5 +8,5 @@
 import Foundation
 
 protocol CurrencyRepository {
-	func requestNewestCurrency(completionHandler: (Result<Currency, ServerError>) -> Void)
+	func requestNewestCurrency(completionHandler: @escaping (Result<Currency, ServerError>) -> Void)
 }

@@ -19,14 +19,18 @@ struct CurrencyReposiroyImpl: CurrencyRepository {
 	}
 	
 	// MARK: - Implementation
-	func requestNewestCurrency(completionHandler: (Result<Currency, ServerError>) -> Void) {
-		remoteDataSource.requestNewestCurrency { result in
-			switch result {
-			case .success(let response):
-				completionHandler(Result.success(response.convertToEntity()))
-			case .failure(let error):
-				completionHandler(Result.failure(error))
+	func requestNewestCurrency(completionHandler: @escaping (Result<Currency, ServerError>) -> Void) {
+		do {
+			try remoteDataSource.requestNewestCurrency { result in
+				switch result {
+				case .success(let response):
+					completionHandler(Result.success(response.convertToEntity()))
+				case .failure(let error):
+					completionHandler(Result.failure(error))
+				}
 			}
+		} catch {
+			completionHandler(Result.failure(ServerError.network))
 		}
 	}
 }

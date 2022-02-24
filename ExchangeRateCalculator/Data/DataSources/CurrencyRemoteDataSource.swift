@@ -8,11 +8,23 @@
 import Foundation
 
 protocol CurrencyRemoteDataSource {
-	func requestNewestCurrency(completionHandler: (Result<CurrencyModel, ServerError>) -> Void)
+	func requestNewestCurrency(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void) throws
 }
 
-struct CurrenctRemoteDataSourceImpl: CurrencyRemoteDataSource {
-	func requestNewestCurrency(completionHandler: (Result<CurrencyModel, ServerError>) -> Void) {
-		
+struct CurrencyRemoteDataSourceImpl: CurrencyRemoteDataSource {
+	private let service: CurrencyServiceType
+	
+	init(service: CurrencyServiceType) {
+		self.service = service
+	}
+	
+	func requestNewestCurrency(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void) throws {
+		service.call { response in
+			guard let model = response else {
+				completionHandler(Result.failure(ServerError.internal))
+				return
+			}
+			completionHandler(Result.success(model))
+		}
 	}
 }

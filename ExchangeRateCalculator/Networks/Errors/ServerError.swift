@@ -8,5 +8,7 @@
 import Foundation
 
 enum ServerError: Error {
+	case network
+	case `internal`
 	case parse
 }

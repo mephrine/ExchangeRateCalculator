@@ -26,10 +26,10 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
 	}
 	
-	func test_shouldReturnCurrencyModelWhenTheResponseIsSuccessful() {
+	func test_shouldReturnCurrencyModelWhenTheResponseIsSuccessful() throws {
 		let expect = currencyModel
 		
-		dataSource.requestNewestCurrency { result in
+		try dataSource.requestNewestCurrency { result in
 			guard case let Result.success(response) = result else {
 				fatalError()
 			}
