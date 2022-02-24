@@ -11,7 +11,11 @@ import XCTest
 class GetNewestCurrencyTests: XCTestCase {
 	private var usecase: GetNewestCurrency!
 	private var stubRespository: StubCurrencyRepository!
-	private let currency = Currency(krw: 1192.9398794964, jpy: 115.0967667032, php: 51.3268409469)
+	private let currency = Currency(currencies: [
+		"KRW" :  1192.9398794964,
+		"JPY": 115.0967667032,
+		"PHP": 51.3268409469
+	])
 	
 	override func setUpWithError() throws {
 		stubRespository = StubCurrencyRepository(currency: currency, error: ServerError.parse)

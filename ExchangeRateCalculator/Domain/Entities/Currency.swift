@@ -8,7 +8,19 @@
 import Foundation
 
 struct Currency: Equatable {
-	let krw: Double
-	let jpy: Double
-	let php: Double
+	let currencies: [String: Double]
+}
+
+extension Currency {
+	var krw: Double? {
+		currencies["KRW"]
+	}
+	
+	var jpy: Double? {
+		currencies["JPY"]
+	}
+	
+	var php: Double? {
+		currencies["PHP"]
+	}
 }
