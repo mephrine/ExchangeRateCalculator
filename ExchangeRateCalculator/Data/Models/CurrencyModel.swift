@@ -28,3 +28,14 @@ struct CurrencyModel: Decodable {
 		}
 	}
 }
+
+// MARK: - Convert
+extension CurrencyModel {
+	func convertToEntity() -> Currency {
+		var currencies: [String: Double] = [:]
+		self.recipientCoutries.forEach {
+			currencies[$0.quoteCurrency] = $0.mid
+		}
+		return Currency(currencies: currencies)
+	}
+}
