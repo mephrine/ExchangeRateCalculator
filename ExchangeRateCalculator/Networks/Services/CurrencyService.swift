@@ -8,17 +8,16 @@
 import Foundation
 
 protocol CurrencyServiceType {
-	func call(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void)
+	func call(completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) throws
 }
 
 final class CurrencyService: CurrencyServiceType {
-	func call(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void) {
+	func call(completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) throws {
 		let urlString = Environment.baseURL + "/v1/convert_from.json"
 		let parameters = [
 			"from": "USD",
 			"to": "KRW,JPY,PHP"
 		]
-		
-		Networking.request(urlString: urlString, parameters: parameters, completionHandler: completionHandler)
+		try Networking.request(urlString: urlString, parameters: parameters, completionHandler: completionHandler)
 	}
 }

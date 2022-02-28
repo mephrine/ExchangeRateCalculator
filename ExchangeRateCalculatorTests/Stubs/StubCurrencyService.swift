@@ -10,15 +10,17 @@ import Foundation
 
 final class StubCurrencyService: CurrencyServiceType {
 	var isSuccessful: Bool = true
-	private let currencyModel: CurrencyModel
-	private let error: ServerError
+	private let data: Data
+	private let urlResponse: URLResponse
+	private let error: Error
 	
-	init(currencyModel: CurrencyModel, error: ServerError) {
-		self.currencyModel = currencyModel
+	init(data: Data, urlResponse: URLResponse, error: Error) {
+		self.data = data
+		self.urlResponse = urlResponse
 		self.error = error
 	}
 	
-	func call(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void) {
-		isSuccessful ? completionHandler(Result.success(currencyModel)) : completionHandler(Result.failure(error))
+	func call(completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) throws {
+		isSuccessful ? completionHandler(data, urlResponse, nil) : completionHandler(nil, nil, error)
 	}
 }

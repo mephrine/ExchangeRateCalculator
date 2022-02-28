@@ -20,16 +20,19 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "JPY", mid: 115.0967667032),
 			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "PHP", mid: 51.3268409469)
 		])
+	private let fixtureData = CurrencyModelFixture.data
 	
 	override func setUpWithError() throws {
-		currencyService = StubCurrencyService(currencyModel: currencyModel, error: ServerError.parse)
+		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+		currencyService = StubCurrencyService(data: fixtureData, urlResponse: response, error: ServerError.invalidURL)
 		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
 	}
 	
-	func test_shouldReturnCurrencyModelWhenTheResponseIsSuccessful() throws {
+	func test_shouldReturnCurrencyModelWhenTheResponseIsSuccessful() {
 		let expect = currencyModel
+		currencyService.isSuccessful = true
 		
-		try dataSource.requestNewestCurrency { result in
+		dataSource.requestNewestCurrency { result in
 			guard case let Result.success(response) = result else {
 				fatalError()
 			}
