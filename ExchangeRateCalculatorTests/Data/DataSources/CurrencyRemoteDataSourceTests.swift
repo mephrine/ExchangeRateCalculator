@@ -77,6 +77,21 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 			XCTAssertEqual(response, expect)
 		}
 	}
+	
+	func test_shouldGetParseErrorWhenTheDataIsNotCurrencyModelData() {
+		let testData = "test".data(using: .utf8)
+		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(data: testData))
+		
+		let expect = ServerError.parse
+		
+		dataSource.requestNewestCurrency { result in
+			guard case let Result.failure(response) = result else {
+				fatalError()
+			}
+
+			XCTAssertEqual(response, expect)
+		}
+	}
 }
 
 
