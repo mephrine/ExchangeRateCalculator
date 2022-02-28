@@ -26,10 +26,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldReturnCurrencyModelWhenTheResponseIsSuccessful() {
-		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-		let currencyService = StubCurrencyService(data: fixtureData, urlResponse: response, error: ServerError.invalidURL)
-		currencyService.isSuccessful = true
-		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
+		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(data: fixtureData))
 		
 		let expect = currencyModel
 		
@@ -42,11 +39,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldGetUnknownErrorWhenTheErrorIsNotNil() {
-		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-		let currencyService = StubCurrencyService(data: fixtureData, urlResponse: response, error: ServerError.invalidURL)
-		currencyService.isSuccessful = false
-		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
-		
+		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(error: ServerError.invalidURL, isSuccessful: false))
 		let expect = ServerError.unknowned
 		
 		dataSource.requestNewestCurrency { result in
@@ -58,10 +51,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldGetNoDataErrorWhenTheDataIsNil() {
-		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-		let currencyService = StubCurrencyService(data: nil, urlResponse: response, error: ServerError.invalidURL)
-		currencyService.isSuccessful = true
-		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
+		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService())
 		
 		let expect = ServerError.noData
 		
@@ -72,5 +62,31 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 
 			XCTAssertEqual(response, expect)
 		}
+	}
+	
+	func test_shouldGetRequestFailedErrorWhenTheStatusCodeIsOutOfRange200To299() {
+		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(statusCode: 199, data: fixtureData))
+		
+		let expect = ServerError.requestFailed
+		
+		dataSource.requestNewestCurrency { result in
+			guard case let Result.failure(response) = result else {
+				fatalError()
+			}
+
+			XCTAssertEqual(response, expect)
+		}
+	}
+}
+
+
+// MARK: - Stubs
+fileprivate extension CurrencyRemoteDataSourceTests {
+	func makeStubService(statusCode: Int = 200, data: Data? = nil, error: Error? = nil, isSuccessful: Bool = true) -> StubCurrencyService {
+		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: statusCode, httpVersion: nil, headerFields: nil)!
+		let currencyService = StubCurrencyService(data: data, urlResponse: response, error: error)
+		currencyService.isSuccessful = isSuccessful
+		
+		return currencyService
 	}
 }
