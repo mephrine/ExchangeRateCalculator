@@ -8,11 +8,11 @@
 import Foundation
 
 protocol CurrencyServiceType {
-	func call(completionHandler: @escaping (Result<CurrencyModel, Error>) -> Void)
+	func call(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void)
 }
 
 final class CurrencyService: CurrencyServiceType {
-	func call(completionHandler: @escaping (Result<CurrencyModel, Error>) -> Void) {
+	func call(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void) {
 		guard  let request = makeURLRequest() else {
 			completionHandler(Result.failure(ServerError.invalidURL))
 			return
@@ -20,7 +20,7 @@ final class CurrencyService: CurrencyServiceType {
 		
 		URLSession.shared.dataTask(with: request) { data, response, error in
 			guard error == nil else {
-				completionHandler(Result.failure(error!))
+				completionHandler(Result.failure(ServerError.unknowned))
 				return
 			}
 			guard let unwrappedData = data else {

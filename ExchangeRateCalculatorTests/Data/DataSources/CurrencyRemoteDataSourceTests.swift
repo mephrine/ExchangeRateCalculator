@@ -22,7 +22,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 		])
 	
 	override func setUpWithError() throws {
-		currencyService = StubCurrencyService(currencyModel: currencyModel)
+		currencyService = StubCurrencyService(currencyModel: currencyModel, error: ServerError.parse)
 		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
 	}
 	

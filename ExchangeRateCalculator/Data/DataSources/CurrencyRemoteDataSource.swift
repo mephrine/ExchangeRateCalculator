@@ -20,11 +20,7 @@ struct CurrencyRemoteDataSourceImpl: CurrencyRemoteDataSource {
 	
 	func requestNewestCurrency(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void) throws {
 		service.call { response in
-			guard let model = response else {
-				completionHandler(Result.failure(ServerError.internal))
-				return
-			}
-			completionHandler(Result.success(model))
+			completionHandler(response)
 		}
 	}
 }

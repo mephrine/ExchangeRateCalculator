@@ -9,12 +9,16 @@ import Foundation
 @testable import ExchangeRateCalculator
 
 final class StubCurrencyService: CurrencyServiceType {
-	private let currencyModel: CurrencyModel?
-	init(currencyModel: CurrencyModel?) {
+	var isSuccessful: Bool = true
+	private let currencyModel: CurrencyModel
+	private let error: ServerError
+	
+	init(currencyModel: CurrencyModel, error: ServerError) {
 		self.currencyModel = currencyModel
+		self.error = error
 	}
 	
-	func call(completionHandler: @escaping (CurrencyModel?) -> Void) {
-		completionHandler(currencyModel)
+	func call(completionHandler: @escaping (Result<CurrencyModel, ServerError>) -> Void) {
+		isSuccessful ? completionHandler(Result.success(currencyModel)) : completionHandler(Result.failure(error))
 	}
 }

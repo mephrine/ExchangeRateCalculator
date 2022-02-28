@@ -14,4 +14,5 @@ enum ServerError: Error {
 	case noData
 	case requestFailed
 	case invalidURL
+	case unknowned
 }
