@@ -10,7 +10,6 @@ import XCTest
 @testable import ExchangeRateCalculator
 
 class CurrencyRemoteDataSourceTests: XCTestCase {
-	private var dataSource: CurrencyRemoteDataSourceImpl!
 	private let currencyModel = CurrencyModel(
 		remittanceCountry: "USD",
 		timestamp: "2022-02-23T00:00:00Z",
@@ -26,7 +25,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldReturnCurrencyModelWhenTheResponseIsSuccessful() {
-		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(data: fixtureData))
+		let dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(data: fixtureData))
 		
 		let expect = currencyModel
 		
@@ -39,7 +38,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldGetUnknownErrorWhenTheErrorIsNotNil() {
-		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(error: ServerError.invalidURL, isSuccessful: false))
+		let dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(error: ServerError.invalidURL, isSuccessful: false))
 		let expect = ServerError.unknowned
 		
 		dataSource.requestNewestCurrency { result in
@@ -51,7 +50,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldGetNoDataErrorWhenTheDataIsNil() {
-		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService())
+		let dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService())
 		
 		let expect = ServerError.noData
 		
@@ -65,7 +64,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldGetRequestFailedErrorWhenTheStatusCodeIsOutOfRange200To299() {
-		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(statusCode: 199, data: fixtureData))
+		let dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(statusCode: 199, data: fixtureData))
 		
 		let expect = ServerError.requestFailed
 		
@@ -80,7 +79,7 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	
 	func test_shouldGetParseErrorWhenTheDataIsNotCurrencyModelData() {
 		let testData = "test".data(using: .utf8)
-		dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(data: testData))
+		let dataSource = CurrencyRemoteDataSourceImpl(service: makeStubService(data: testData))
 		
 		let expect = ServerError.parse
 		

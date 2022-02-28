@@ -7,9 +7,7 @@
 
 import Foundation
 
-enum ServerError: Error {
-	case network
-	case `internal`
+enum ServerError: Error, CaseIterable {
 	case parse
 	case noData
 	case requestFailed
