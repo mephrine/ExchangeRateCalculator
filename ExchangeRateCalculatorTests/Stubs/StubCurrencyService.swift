@@ -10,11 +10,11 @@ import Foundation
 
 final class StubCurrencyService: CurrencyServiceType {
 	var isSuccessful: Bool = true
-	private let data: Data
-	private let urlResponse: URLResponse
-	private let error: Error
+	private let data: Data?
+	private let urlResponse: URLResponse?
+	private let error: Error?
 	
-	init(data: Data, urlResponse: URLResponse, error: Error) {
+	init(data: Data?, urlResponse: URLResponse?, error: Error?) {
 		self.data = data
 		self.urlResponse = urlResponse
 		self.error = error

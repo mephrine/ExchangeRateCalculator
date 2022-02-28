@@ -10,7 +10,6 @@ import XCTest
 @testable import ExchangeRateCalculator
 
 class CurrencyRemoteDataSourceTests: XCTestCase {
-	private var currencyService: StubCurrencyService!
 	private var dataSource: CurrencyRemoteDataSourceImpl!
 	private let currencyModel = CurrencyModel(
 		remittanceCountry: "USD",
@@ -23,14 +22,16 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	private let fixtureData = CurrencyModelFixture.data
 	
 	override func setUpWithError() throws {
-		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
-		currencyService = StubCurrencyService(data: fixtureData, urlResponse: response, error: ServerError.invalidURL)
-		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
+		
 	}
 	
 	func test_shouldReturnCurrencyModelWhenTheResponseIsSuccessful() {
-		let expect = currencyModel
+		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+		let currencyService = StubCurrencyService(data: fixtureData, urlResponse: response, error: ServerError.invalidURL)
 		currencyService.isSuccessful = true
+		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
+		
+		let expect = currencyModel
 		
 		dataSource.requestNewestCurrency { result in
 			guard case let Result.success(response) = result else {
@@ -41,13 +42,34 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 	}
 	
 	func test_shouldGetUnknownErrorWhenTheErrorIsNotNil() {
-		let expect = ServerError.unknowned
+		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+		let currencyService = StubCurrencyService(data: fixtureData, urlResponse: response, error: ServerError.invalidURL)
 		currencyService.isSuccessful = false
+		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
+		
+		let expect = ServerError.unknowned
 		
 		dataSource.requestNewestCurrency { result in
 			guard case let Result.failure(response) = result else {
 				fatalError()
 			}
+			XCTAssertEqual(response, expect)
+		}
+	}
+	
+	func test_shouldGetNoDataErrorWhenTheDataIsNil() {
+		let response = HTTPURLResponse(url: URL(string: Environment.baseURL)!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+		let currencyService = StubCurrencyService(data: nil, urlResponse: response, error: ServerError.invalidURL)
+		currencyService.isSuccessful = true
+		dataSource = CurrencyRemoteDataSourceImpl(service: currencyService)
+		
+		let expect = ServerError.noData
+		
+		dataSource.requestNewestCurrency { result in
+			guard case let Result.failure(response) = result else {
+				fatalError()
+			}
+
 			XCTAssertEqual(response, expect)
 		}
 	}
