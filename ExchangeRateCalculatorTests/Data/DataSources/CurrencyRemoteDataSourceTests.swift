@@ -39,4 +39,16 @@ class CurrencyRemoteDataSourceTests: XCTestCase {
 			XCTAssertEqual(response, expect)
 		}
 	}
+	
+	func test_shouldGetUnknownErrorWhenTheErrorIsNotNil() {
+		let expect = ServerError.unknowned
+		currencyService.isSuccessful = false
+		
+		dataSource.requestNewestCurrency { result in
+			guard case let Result.failure(response) = result else {
+				fatalError()
+			}
+			XCTAssertEqual(response, expect)
+		}
+	}
 }
