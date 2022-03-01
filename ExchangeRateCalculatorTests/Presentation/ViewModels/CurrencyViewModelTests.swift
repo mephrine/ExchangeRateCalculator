@@ -91,6 +91,34 @@ final class CurrencyViewModelTest: XCTestCase {
 		XCTAssertNoThrow(try viewModel.changedRemittanceTextField(to: String(10000)))
 		XCTAssertNoThrow(try viewModel.changedRemittanceTextField(to: String(1)))
 	}
+	
+	func test_shouldThrowIsNotNumericErrorWhenTheRemittanceAmountIsNotNumeric() throws {
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		
+		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: "abcd"), "-1 isn't included in the range") { error in
+			guard let valueError = error as? Remittance.ValueError else {
+				XCTFail("Isn't value error")
+				return
+			}
+			XCTAssertEqual(valueError, Remittance.ValueError.isNotNumereic)
+		}
+		
+		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: "😀"), "-1 isn't included in the range") { error in
+			guard let valueError = error as? Remittance.ValueError else {
+				XCTFail("Isn't value error")
+				return
+			}
+			XCTAssertEqual(valueError, Remittance.ValueError.isNotNumereic)
+		}
+		
+		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: "가나다라마바사아"), "-1 isn't included in the range") { error in
+			guard let valueError = error as? Remittance.ValueError else {
+				XCTFail("Isn't value error")
+				return
+			}
+			XCTAssertEqual(valueError, Remittance.ValueError.isNotNumereic)
+		}
+	}
 }
 
 fileprivate extension CurrencyViewModelTest {
