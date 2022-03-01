@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	}
 	
 	private func setupRootViewController() {
-		let rootViewController = ViewController()
+		let rootViewController = CurrencyViewController()
 		self.window?.rootViewController = rootViewController
 		self.window?.makeKeyAndVisible()
 	}

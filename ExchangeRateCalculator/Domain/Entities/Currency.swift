@@ -12,20 +12,6 @@ struct Currency: Equatable {
 	let inquiryTime: String
 }
 
-fileprivate extension Currency {
-	var krw: Double? {
-		currencies["KRW"]
-	}
-	
-	var jpy: Double? {
-		currencies["JPY"]
-	}
-	
-	var php: Double? {
-		currencies["PHP"]
-	}
-}
-
 extension Currency {
 	func find(by receiptCountry: ReceiptCountry) -> Double? {
 		currencies[receiptCountry.currencyUnit]
