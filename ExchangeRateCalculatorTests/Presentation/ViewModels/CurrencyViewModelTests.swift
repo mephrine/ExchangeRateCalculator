@@ -59,10 +59,19 @@ final class CurrencyViewModelTest: XCTestCase {
 		XCTAssertEqual(expectResult, viewModel.currency)
 		XCTAssertEqual(stubUsecase.callCount, verify)
 	}
+	
+	func test_shoudGetResultWhenTheRemittanceAmountIsIncludedBetween1And10000() {
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		
+		(1...10000).forEach { number in
+			viewModel.changedRemittanceTextField(to: String(number))
+			XCTAssertEqual(viewModel.remittance, number)
+		}
+	}
 }
 
 fileprivate extension CurrencyViewModelTest {
-	func makeStubUsecase(expectation: XCTestExpectation, isSuccessful: Bool = true) -> StubGetNewestCurrency {
+	func makeStubUsecase(expectation: XCTestExpectation? = nil, isSuccessful: Bool = true) -> StubGetNewestCurrency {
 		let stubUsecase = StubGetNewestCurrency(currency: currency, error: ServerError.unknowned, expectation: expectation)
 		stubUsecase.isSuccessful = isSuccessful
 		return stubUsecase
