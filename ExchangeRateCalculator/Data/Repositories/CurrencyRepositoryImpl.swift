@@ -8,7 +8,7 @@
 import Foundation
 import SystemConfiguration
 
-struct CurrencyReposiroyImpl: CurrencyRepository {
+struct CurrencyRepositoryImpl: CurrencyRepository {
 	// MARK: - Inject
 	private let remoteDataSource: CurrencyRemoteDataSource
 	

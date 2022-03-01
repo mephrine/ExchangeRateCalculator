@@ -21,7 +21,7 @@ class CurrencyRepositoryImplTests: XCTestCase {
 	}
 	
 	func test_shouldGetCurrencyModelWhenTheResultIsSuccessful() {
-		let repository = CurrencyReposiroyImpl(remoteDataSource: makeStubDataSource(error: ServerError.unknowned))
+		let repository = CurrencyRepositoryImpl(remoteDataSource: makeStubDataSource(error: ServerError.unknowned))
 		
 		let expect = currency
 		repository.requestNewestCurrency { result in
@@ -40,7 +40,7 @@ class CurrencyRepositoryImplTests: XCTestCase {
 	}
 	
 	private func verify(error: ServerError) {
-		let repository = CurrencyReposiroyImpl(remoteDataSource: makeStubDataSource(error: error, isSuccessful: false))
+		let repository = CurrencyRepositoryImpl(remoteDataSource: makeStubDataSource(error: error, isSuccessful: false))
 		let expect = error
 		repository.requestNewestCurrency { result in
 			guard case let Result.failure(response) = result else {

@@ -19,9 +19,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	}
 	
 	private func setupRootViewController() {
-		let rootViewController = CurrencyViewController()
+		let rootViewController = makeRootViewController()
 		self.window?.rootViewController = rootViewController
 		self.window?.makeKeyAndVisible()
+	}
+	
+	private func makeRootViewController() -> CurrencyViewController {
+		let service = CurrencyService()
+		let dataSource = CurrencyRemoteDataSourceImpl(service: service)
+		let repository = CurrencyRepositoryImpl(remoteDataSource: dataSource)
+		let usecase = GetNewestCurrency(repository: repository)
+		let viewModel = CurrencyViewModel(usecase: usecase)
+		let viewController = CurrencyViewController(viewModel: viewModel)
+		return viewController
 	}
 }
 
