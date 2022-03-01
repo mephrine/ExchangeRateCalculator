@@ -19,6 +19,7 @@ final class CurrencyViewModel {
 	var currency: Currency? = nil
 	var error: ServerError? = nil
 	var usecaseExcute: DispatchWorkItem?
+	var remittance: Int = 0
 	
 	init(usecase: GetNewestCurrencyUsecase) {
 		self.usecase = usecase
@@ -31,6 +32,15 @@ final class CurrencyViewModel {
 		let dispatchWorkItem = makeUsecaseExcuteDispatchWorkItem()
 		self.usecaseExcute = dispatchWorkItem
 		DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + .milliseconds(Options.requestIntervalTime), execute: dispatchWorkItem)
+	}
+	
+	func changedRemittanceTextField(to remittance: String) {
+		do {
+			let changedRemittance = try Remittance(remittance: remittance)
+			self.remittance = changedRemittance.amount
+		} catch {
+			
+		}
 	}
 	
 	private func makeUsecaseExcuteDispatchWorkItem() -> DispatchWorkItem {
