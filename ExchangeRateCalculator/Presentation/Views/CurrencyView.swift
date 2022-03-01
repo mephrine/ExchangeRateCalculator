@@ -63,7 +63,7 @@ final class CurrencyView: UIView {
 		return label
 	}()
 	
-	private lazy var receiptCountryInfoLabel: UILabel = {
+	lazy var receiptCountryInfoLabel: UILabel = {
 		let label = makeInfoLabel()
 		return label
 	}()
@@ -217,7 +217,7 @@ final class CurrencyView: UIView {
 // MARK: - Actions
 extension CurrencyView {
 	func changeCurrency(by currency: Currency, and receiptCountry: ReceiptCountry) {
-		let currencyAmount = String(describing: currency.find(by: receiptCountry) ?? 0)
+		let currencyAmount = currency.find(by: receiptCountry)?.convertToCurrencyFormat() ?? "0"
 		DispatchQueue.main.async { [weak self] in
 			guard let self = self else { return }
 			self.receiptCountryInfoLabel.text = receiptCountry.countryUnit
