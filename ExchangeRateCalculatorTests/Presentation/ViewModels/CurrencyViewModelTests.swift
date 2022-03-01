@@ -14,7 +14,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		"KRW" :  1192.9398794964,
 		"JPY": 115.0967667032,
 		"PHP": 51.3268409469
-	])
+	], inquiryTime: "2022-02-23 09:00")
 	
 	private var stubDelegate = StubCurrencyViewModelDelegate()
 	
@@ -22,7 +22,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		stubDelegate = StubCurrencyViewModelDelegate()
 	}
 	
-	func test_shouldGetDatawhenTheRequestIsSuccessfulForGetNewestCurrencyUsecase() {
+	func test_shouldGetDataWhenTheRequestIsSuccessfulForGetNewestCurrencyUsecase() {
 		let expect = expectation(description: "requestNewestCurrency")
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
@@ -123,6 +123,17 @@ final class CurrencyViewModelTest: XCTestCase {
 		
 		viewModel.changedRemittanceTextField(to: "1")
 		XCTAssertEqual(stubDelegate.amountReceived?.amount, "1,192.93 KRW")
+	}
+	
+	func test_shouldGetInquiryTimeWhenTheRequestIsSuccessfulForGetNewestCurrencyUsecase() {
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
+		viewModel.delegate = stubDelegate
+		viewModel.loadedView()
+		
+		waitForExpectations(timeout: 3, handler: nil)
+		
+		XCTAssertEqual(stubDelegate.currency?.inquiryTime, "2022-02-23 09:00")
 	}
 }
 
