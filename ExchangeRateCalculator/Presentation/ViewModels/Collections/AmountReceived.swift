@@ -17,13 +17,3 @@ struct AmountReceived {
 		self.amount = "\(amount) \(currencyUnit)"
 	}
 }
-
-fileprivate extension Double {
-	func convertToCurrencyFormat() -> String? {
-		let numberFormat = NumberFormatter()
-		numberFormat.roundingMode = .floor
-		numberFormat.numberStyle = .decimal
-		numberFormat.maximumFractionDigits = 2
-		return numberFormat.string(for: self)
-	}
-}

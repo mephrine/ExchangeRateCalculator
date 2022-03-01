@@ -141,7 +141,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
 	
-		viewModel.selectedReceiptCountryPickerItem(ReceiptCountry.korea)
+		viewModel.selectedReceiptCountryPickerItem(ReceiptCountry.korea, remittanceAmount: nil)
 		
 		let expectResult = (currency: currency, country: ReceiptCountry.korea)
 		waitForExpectations(timeout: 5, handler: nil)

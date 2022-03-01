@@ -19,13 +19,9 @@ class CurrencyViewController: UIViewController {
 	// MARK: - Views
 	private let currencyView = CurrencyView()
 	
-	private lazy var countryPickerView: UIPickerView = {
-		let pickerView = UIPickerView()
-		self.view.addSubview(pickerView)
-		pickerView.delegate = self
-		pickerView.dataSource  = self
-		return pickerView
-	}()
+	private var countryPickerView: UIPickerView? = nil
+	private var countryToolBar: UIToolbar? = nil
+	private var selectedCountryIndex: Int = 0
 	
 	// MARK: - Initialize
 	init(viewModel: CurrencyViewModel) {
@@ -54,6 +50,10 @@ fileprivate extension CurrencyViewController {
 	func setupUI() {
 		currencyView.remittanceTextField.delegate = self
 		currencyView.remittanceTextField.addTarget(self, action: #selector(didChangeTextField(textField:)), for: .editingChanged)
+		
+		let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapReceiptCountryInfoLabel))
+		currencyView.receiptCountryInfoLabel.addGestureRecognizer(tapGestureRecognizer)
+		currencyView.receiptCountryInfoLabel.isUserInteractionEnabled = true
 	}
 }
 
@@ -67,6 +67,45 @@ extension  CurrencyViewController {
 			return
 		}
 		viewModel.changedRemittanceTextField(to: changedText)
+	}
+	
+	@objc func didTapReceiptCountryInfoLabel() {
+		showPickerView()
+	}
+	
+	private func showPickerView() {
+		countryPickerView = UIPickerView()
+		countryPickerView?.delegate = self
+		countryPickerView?.dataSource  = self
+		self.view.addSubview(countryPickerView!)
+		
+		countryPickerView?.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint.activate([
+			countryPickerView!.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+			countryPickerView!.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+			countryPickerView!.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+		])
+		
+		countryPickerView?.selectRow(selectedCountryIndex, inComponent: 0, animated: true)
+		
+		countryToolBar = UIToolbar()
+		countryToolBar?.items = [
+			UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(didTapDoneButton))
+		]
+		self.view.addSubview(countryToolBar!)
+		
+		countryToolBar?.translatesAutoresizingMaskIntoConstraints = false
+		NSLayoutConstraint.activate([
+			countryToolBar!.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+			countryToolBar!.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+			countryToolBar!.bottomAnchor.constraint(equalTo: countryPickerView!.topAnchor)
+		])
+	}
+	
+	@objc func didTapDoneButton() {
+		countryPickerView?.removeFromSuperview()
+		countryToolBar?.removeFromSuperview()
+		viewModel.selectedReceiptCountryPickerItem(pickerItems[selectedCountryIndex], remittanceAmount: currencyView.remittanceTextField.text)
 	}
 }
 
@@ -123,6 +162,6 @@ extension CurrencyViewController: UIPickerViewDelegate {
 	}
 	
 	func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-		viewModel.selectedReceiptCountryPickerItem(pickerItems[row])
+		selectedCountryIndex = row
 	}
 }

@@ -19,7 +19,7 @@ protocol CurrencyViewModelDelegate: AnyObject {
 protocol CurrencyViewAction {
 	func loadedView()
 	func changedRemittanceTextField(to remittance: String)
-	func selectedReceiptCountryPickerItem(_ item: ReceiptCountry)
+	func selectedReceiptCountryPickerItem(_ item: ReceiptCountry, remittanceAmount: String?)
 }
 
 final class CurrencyViewModel {
@@ -42,11 +42,11 @@ final class CurrencyViewModel {
 		self.usecase = usecase
 	}
 	
-	private func requestNewestCurrency() {
+	private func requestNewestCurrency(remittanceAmount: String? = nil) {
 		if usecaseExcute?.isCancelled == false {
 			usecaseExcute?.cancel()
 		}
-		let dispatchWorkItem = makeUsecaseExcuteDispatchWorkItem()
+		let dispatchWorkItem = makeUsecaseExcuteDispatchWorkItem(remittanceAmount: remittanceAmount)
 		self.usecaseExcute = dispatchWorkItem
 		DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + .milliseconds(Options.requestIntervalTime), execute: dispatchWorkItem)
 	}
@@ -80,15 +80,15 @@ extension CurrencyViewModel: CurrencyViewAction {
 		}
 	}
 	
-	func selectedReceiptCountryPickerItem(_ item: ReceiptCountry) {
+	func selectedReceiptCountryPickerItem(_ item: ReceiptCountry, remittanceAmount: String?) {
 		receiptCounty = item
-		requestNewestCurrency()
+		requestNewestCurrency(remittanceAmount: remittanceAmount)
 	}
 }
 
 // MARK: - Utils {
 fileprivate extension CurrencyViewModel {
-	 func makeUsecaseExcuteDispatchWorkItem() -> DispatchWorkItem {
+	 func makeUsecaseExcuteDispatchWorkItem(remittanceAmount: String?) -> DispatchWorkItem {
 		DispatchWorkItem { [weak self] in
 			guard let self = self else { return }
 			self.usecase.excute { result in
@@ -96,6 +96,9 @@ fileprivate extension CurrencyViewModel {
 				case .success(let currency):
 					self.delegate?.currencyViewModel(self, didChangeCurrency: currency, of: self.receiptCounty)
 					self.currency = currency
+					if let remittance = remittanceAmount {
+						self.changedRemittanceTextField(to: remittance)
+					}
 				case .failure(let error):
 					self.delegate?.currencyViewModel(self, didOccurServerError: error)
 				}
