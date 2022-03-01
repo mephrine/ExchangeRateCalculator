@@ -7,6 +7,13 @@
 
 import Foundation
 
+protocol CurrencyViewModelDelegate: AnyObject {
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeCurrency currency: Currency)
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeRemittance remittance: Remittance)
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurServerError error: ServerError)
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurRemittanceValueError error: Remittance.ValueError)
+}
+
 final class CurrencyViewModel {
 	private enum Options {
 		static let requestIntervalTime = 300
@@ -15,16 +22,20 @@ final class CurrencyViewModel {
 	// MARK: - Inject
 	private let usecase: GetNewestCurrencyUsecase
 	
+	// MARK: - Delegate
+	weak var delegate: CurrencyViewModelDelegate?
+	
 	// MARK: - Properties
 	var currency: Currency? = nil
-	var error: Error? = nil
 	var usecaseExcute: DispatchWorkItem?
-	var remittance: Int = 0
 	
 	init(usecase: GetNewestCurrencyUsecase) {
 		self.usecase = usecase
-	}
-	
+	}	
+}
+
+// MARK: - Actions
+extension CurrencyViewModel {
 	func requestNewestCurrency() {
 		if usecaseExcute?.isCancelled == false {
 			usecaseExcute?.cancel()
@@ -34,26 +45,35 @@ final class CurrencyViewModel {
 		DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + .milliseconds(Options.requestIntervalTime), execute: dispatchWorkItem)
 	}
 	
-	func changedRemittanceTextField(to remittance: String) throws {
-		let changedRemittance = try Remittance(remittance: remittance)
-		self.remittance = changedRemittance.amount
+	func changedRemittanceTextField(to remittance: String) {
+		do {
+			let changedRemittance = try Remittance(remittance: remittance)
+			self.delegate?.currencyViewModel(self, didChangeRemittance: changedRemittance)
+		} catch {
+			guard let valueError = error as? Remittance.ValueError else { return }
+			delegate?.currencyViewModel(self, didOccurRemittanceValueError: valueError)
+		}
 	}
-	
-	private func makeUsecaseExcuteDispatchWorkItem() -> DispatchWorkItem {
+}
+
+// MARK: - Utils {
+fileprivate extension CurrencyViewModel {
+	 func makeUsecaseExcuteDispatchWorkItem() -> DispatchWorkItem {
 		DispatchWorkItem { [weak self] in
 			guard let self = self else { return }
 			self.usecase.excute { result in
 				switch result {
 				case .success(let currency):
+					self.delegate?.currencyViewModel(self, didChangeCurrency: currency)
 					self.currency = currency
 				case .failure(let error):
-					self.error = error
+					self.delegate?.currencyViewModel(self, didOccurServerError: error)
 				}
 			}
 		}
 	}
 	
-	private func removeViewAfter(duringTime: Double) {
+	func removeViewAfter(duringTime: Double) {
 		guard let clearExcute = self.usecaseExcute else { return }
 		DispatchQueue.main.asyncAfter(deadline: .now() + duringTime, execute: clearExcute)
 	}

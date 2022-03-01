@@ -16,13 +16,16 @@ final class CurrencyViewModelTest: XCTestCase {
 		"PHP": 51.3268409469
 	])
 	
-	override func setUpWithError() throws {
-		
+	private var stubDelegate = StubCurrencyViewModelDelegate()
+	
+	override func tearDownWithError() throws {
+		stubDelegate = StubCurrencyViewModelDelegate()
 	}
 	
 	func test_shouldGetDatawhenTheRequestIsSuccessfulForGetNewestCurrencyUsecase() {
 		let expect = expectation(description: "requestNewestCurrency")
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
+		viewModel.delegate = stubDelegate
 	
 		viewModel.requestNewestCurrency()
 		
@@ -34,12 +37,13 @@ final class CurrencyViewModelTest: XCTestCase {
 	func test_shouldGetErrorWhenTheRequestForTheGetNewestCurrencyUsecaseFails() {
 		let expect = expectation(description: "requestNewestCurrency")
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect, isSuccessful: false))
+		viewModel.delegate = stubDelegate
 		
 		viewModel.requestNewestCurrency()
 		
 		let expectResult = ServerError.unknowned
 		waitForExpectations(timeout: 3, handler: nil)
-		XCTAssertEqual(expectResult, viewModel.error as? ServerError)
+		XCTAssertEqual(expectResult, stubDelegate.error as? ServerError)
 	}
 	
 	func test_shouldBeCalledOnlyTheLastAPIWhenTheViewModelMakesMulipleRequests() {
@@ -47,6 +51,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		let stubUsecase = StubGetNewestCurrency(currency: currency, error: ServerError.unknowned, expectation: expect)
 		stubUsecase.isSuccessful = true
 		let viewModel = CurrencyViewModel(usecase: stubUsecase)
+		viewModel.delegate = stubDelegate
 		
 		viewModel.requestNewestCurrency()
 		viewModel.requestNewestCurrency()
@@ -60,64 +65,40 @@ final class CurrencyViewModelTest: XCTestCase {
 		XCTAssertEqual(stubUsecase.callCount, verify)
 	}
 	
-	func test_shoudGetResultWhenTheRemittanceAmountIsIncludedBetween1And10000() throws {
+	func test_shoudGetResultWhenTheRemittanceAmountIsIncludedBetween1And10000() {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		viewModel.delegate = stubDelegate
 		
 		(1...10000).forEach { number in
-			try? viewModel.changedRemittanceTextField(to: String(number))
-			XCTAssertEqual(viewModel.remittance, number)
+			viewModel.changedRemittanceTextField(to: String(number))
+			XCTAssertEqual(stubDelegate.remittance?.amount, number)
 		}
 	}
 	
-	func test_shouldThrowOutOfRangeErrorWhenTheRemittanceAmountIsoutOfRangeFrom1To10000() throws {
+	func test_shouldThrowOutOfRangeErrorWhenTheRemittanceAmountIsoutOfRangeFrom1To10000() {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		viewModel.delegate = stubDelegate
 		
-		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: String(-1)), "-1 isn't included in the range") { error in
-			guard let valueError = error as? Remittance.ValueError else {
-				XCTFail("Isn't value error")
-				return
-			}
-			XCTAssertEqual(valueError, Remittance.ValueError.outOfRange)
-		}
+		viewModel.changedRemittanceTextField(to: String(-1))
+		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.outOfRange)
 		
-		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: String(10001)), "-1 isn't included in the range") { error in
-			guard let valueError = error as? Remittance.ValueError else {
-				XCTFail("Isn't value error")
-				return
-			}
-			XCTAssertEqual(valueError, Remittance.ValueError.outOfRange)
-		}
 		
-		XCTAssertNoThrow(try viewModel.changedRemittanceTextField(to: String(10000)))
-		XCTAssertNoThrow(try viewModel.changedRemittanceTextField(to: String(1)))
+		viewModel.changedRemittanceTextField(to: String(10001))
+		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.outOfRange)
 	}
 	
-	func test_shouldThrowIsNotNumericErrorWhenTheRemittanceAmountIsNotNumeric() throws {
+	func test_shouldThrowIsNotNumericErrorWhenTheRemittanceAmountIsNotNumeric() {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		viewModel.delegate = stubDelegate
 		
-		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: "abcd"), "-1 isn't included in the range") { error in
-			guard let valueError = error as? Remittance.ValueError else {
-				XCTFail("Isn't value error")
-				return
-			}
-			XCTAssertEqual(valueError, Remittance.ValueError.isNotNumereic)
-		}
+		viewModel.changedRemittanceTextField(to: "abcd")
+		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.isNotNumereic)
 		
-		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: "😀"), "-1 isn't included in the range") { error in
-			guard let valueError = error as? Remittance.ValueError else {
-				XCTFail("Isn't value error")
-				return
-			}
-			XCTAssertEqual(valueError, Remittance.ValueError.isNotNumereic)
-		}
+		viewModel.changedRemittanceTextField(to: "😀")
+		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.isNotNumereic)
 		
-		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: "가나다라마바사아"), "-1 isn't included in the range") { error in
-			guard let valueError = error as? Remittance.ValueError else {
-				XCTFail("Isn't value error")
-				return
-			}
-			XCTAssertEqual(valueError, Remittance.ValueError.isNotNumereic)
-		}
+		viewModel.changedRemittanceTextField(to: "가나다라마바사아")
+		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.isNotNumereic)
 	}
 }
 
