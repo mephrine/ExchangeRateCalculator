@@ -30,4 +30,12 @@ final class CurrencyViewModelTest: XCTestCase {
 		
 		XCTAssertEqual(expect, viewModel.currency)
 	}
+	
+	func test_shouldGetErrorWhenTheRequestForTheGetNewestCurrencyUsecaseFails() {
+		let expect = ServerError.unknowned
+		
+		viewModel.requestNewestCurrency()
+		
+		XCTAssertEqual(expect, viewModel.error)
+	}
 }
