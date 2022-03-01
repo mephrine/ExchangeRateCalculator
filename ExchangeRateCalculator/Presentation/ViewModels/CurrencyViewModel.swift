@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 protocol CurrencyViewModelDelegate: AnyObject {
-	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeCurrency currency: Currency)
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeCurrency currency: Currency, of country: ReceiptCountry)
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeAmountReceived amountReceived: AmountReceived)
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurServerError error: ServerError)
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurRemittanceValueError error: Remittance.ValueError)
@@ -19,6 +19,7 @@ protocol CurrencyViewModelDelegate: AnyObject {
 protocol CurrencyViewAction {
 	func loadedView()
 	func changedRemittanceTextField(to remittance: String)
+	func selectedReceiptCountryPickerItem(_ item: ReceiptCountry)
 }
 
 final class CurrencyViewModel {
@@ -78,6 +79,11 @@ extension CurrencyViewModel: CurrencyViewAction {
 			delegate?.currencyViewModel(self, didOccurExchangeRateCalculatorValueError: valueError)
 		}
 	}
+	
+	func selectedReceiptCountryPickerItem(_ item: ReceiptCountry) {
+		receiptCounty = item
+		requestNewestCurrency()
+	}
 }
 
 // MARK: - Utils {
@@ -88,7 +94,7 @@ fileprivate extension CurrencyViewModel {
 			self.usecase.excute { result in
 				switch result {
 				case .success(let currency):
-					self.delegate?.currencyViewModel(self, didChangeCurrency: currency)
+					self.delegate?.currencyViewModel(self, didChangeCurrency: currency, of: self.receiptCounty)
 					self.currency = currency
 				case .failure(let error):
 					self.delegate?.currencyViewModel(self, didOccurServerError: error)
