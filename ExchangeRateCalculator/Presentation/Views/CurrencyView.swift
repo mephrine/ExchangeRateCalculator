@@ -25,6 +25,7 @@ final class CurrencyView: UIView {
 			static let background: UIColor = .white
 			static let font: UIColor = .black
 			static let infoFont: UIColor = .darkGray
+			static let errorFont: UIColor = .red
 			static let hint: UIColor = .gray
 			static let remittanceTextFieldBorder: UIColor = .gray
 		}
@@ -59,31 +60,26 @@ final class CurrencyView: UIView {
 	
 	private lazy var remittanceCountryInfoLabel: UILabel = {
 		let label = makeInfoLabel()
-		
 		return label
 	}()
 	
 	private lazy var receiptCountryInfoLabel: UILabel = {
 		let label = makeInfoLabel()
-		
 		return label
 	}()
 	
 	private lazy var currencyInfoLabel: UILabel = {
 		let label = makeInfoLabel()
-		
 		return label
 	}()
 	
 	private lazy var inquiryTimeInfoLabel: UILabel = {
 		let label = makeInfoLabel()
-		
 		return label
 	}()
 	
 	private lazy var remittanceAmountInfoLabel: UILabel = {
 		let label = makeInfoLabel()
-		
 		return label
 	}()
 		
@@ -170,8 +166,8 @@ final class CurrencyView: UIView {
 		resultLabel.text = "송금액을 입력해주세요."
 		remittanceCountryInfoLabel.text = "미국 (USD)"
 		receiptCountryInfoLabel.text = "한국 (KRW)"
-		currencyInfoLabel.text = "1,130.05 KRW / USD"
-		inquiryTimeInfoLabel.text = "2019-03-20 16:13"
+		currencyInfoLabel.text = ""
+		inquiryTimeInfoLabel.text = ""
 		remittanceAmountInfoLabel.text = "USD"
 	}
 	
@@ -220,18 +216,21 @@ final class CurrencyView: UIView {
 
 // MARK: - Actions
 extension CurrencyView {
-	func changeReceiptCountry(by country: ReceiptCountry) {
-		self.receiptCountryInfoLabel.text = country.countryUnit
-	}
-	
 	func changeCurrency(by currency: Currency, and receiptCountry: ReceiptCountry) {
 		let currencyAmount = String(describing: currency.find(by: receiptCountry))
+		self.receiptCountryInfoLabel.text = receiptCountry.countryUnit
 		self.inquiryTimeInfoLabel.text = currency.inquiryTime
 		self.currencyInfoLabel.text = "\(currencyAmount) \(receiptCountry.currencyUnit) / USD"
 	}
 	
-	func changeRemittanceAmount(by amountReceived: AmountReceived) {
+	func changeAmountReceived(by amountReceived: AmountReceived) {
+		self.currencyInfoLabel.textColor = UI.Color.infoFont
 		self.currencyInfoLabel.text = "수취금액은 \(amountReceived.amount) 입니다."
+	}
+	
+	func showErrorMessage(of error: Error) {
+		self.currencyInfoLabel.textColor = UI.Color.errorFont
+		self.currencyInfoLabel.text = error.localizedDescription
 	}
 }
 
