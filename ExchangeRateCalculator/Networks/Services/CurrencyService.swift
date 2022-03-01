@@ -13,7 +13,7 @@ protocol CurrencyServiceType {
 
 final class CurrencyService: CurrencyServiceType {
 	func call(completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) throws {
-		let urlString = Environment.baseURL + "/v1/convert_from.json"
+		let urlString = "/v1/convert_from.json"
 		let parameters = [
 			"from": "USD",
 			"to": "KRW,JPY,PHP"
