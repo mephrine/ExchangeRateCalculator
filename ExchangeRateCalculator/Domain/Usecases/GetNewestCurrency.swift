@@ -7,7 +7,11 @@
 
 import Foundation
 
-struct GetNewestCurrency: Usecase {	
+protocol GetNewestCurrencyUsecase {
+	func excute(completionHandler: @escaping (Result<Currency, ServerError>) -> ())
+}
+
+struct GetNewestCurrency: GetNewestCurrencyUsecase {
 	private let repository: CurrencyRepository
 	
 	init(repository: CurrencyRepository) {
