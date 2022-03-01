@@ -40,4 +40,24 @@ final class CurrencyViewModelTest: XCTestCase {
 		let expect = ServerError.unknowned
 		XCTAssertEqual(expect, viewModel.error)
 	}
+	
+	func test_shouldBeCalledOnlyTheLastAPIWhenTheViewModelMakesMulipleRequests() {
+		let expect = expectation(description: "requestNewestCurrency")
+		let stubUsecase = StubGetNewestCurrency(currency: currency, error: ServerError.unknowned, expectation: expect)
+		let viewModel = CurrencyViewModel(usecase: stubUsecase)
+		stubUsecase.isSuccessful = true
+		
+		viewModel.requestNewestCurrency()
+		viewModel.requestNewestCurrency()
+		viewModel.requestNewestCurrency()
+		viewModel.requestNewestCurrency()
+		
+		let expectResult = currency
+		let verify = 1
+		
+		waitForExpectations(timeout: 3, handler: nil)
+		
+		XCTAssertEqual(expectResult, viewModel.currency)
+		XCTAssertEqual(stubUsecase.callCount, verify)
+	}
 }
