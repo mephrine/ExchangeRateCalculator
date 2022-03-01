@@ -60,7 +60,12 @@ fileprivate extension CurrencyViewController {
 // MARK: - Actions
 extension  CurrencyViewController {
 	@objc func didChangeTextField(textField: UITextField) {
-		guard let changedText = textField.text else { return }
+		guard let changedText = textField.text,
+					changedText.isEmpty == false
+		else {
+			currencyView.changeRemittanceAmountToBlank()
+			return
+		}
 		viewModel.changedRemittanceTextField(to: changedText)
 	}
 }

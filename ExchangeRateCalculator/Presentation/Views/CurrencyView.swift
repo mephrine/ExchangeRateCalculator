@@ -229,16 +229,24 @@ extension CurrencyView {
 	func changeAmountReceived(by amountReceived: AmountReceived) {
 		DispatchQueue.main.async { [weak self] in
 			guard let self = self else { return }
-			self.currencyInfoLabel.textColor = UI.Color.infoFont
-			self.currencyInfoLabel.text = "수취금액은 \(amountReceived.amount) 입니다."
+			self.resultLabel.textColor = UI.Color.infoFont
+			self.resultLabel.text = amountReceived.amount.isEmpty ? "송금액을 입력해주세요." : "수취금액은 \(amountReceived.amount) 입니다."
+		}
+	}
+	
+	func changeRemittanceAmountToBlank() {
+		DispatchQueue.main.async { [weak self] in
+			guard let self = self else { return }
+			self.resultLabel.textColor = UI.Color.infoFont
+			self.resultLabel.text = "송금액을 입력해주세요."
 		}
 	}
 	
 	func showErrorMessage(of error: Error) {
 		DispatchQueue.main.async { [weak self] in
 			guard let self = self else { return }
-			self.currencyInfoLabel.textColor = UI.Color.errorFont
-			self.currencyInfoLabel.text = error.localizedDescription
+			self.resultLabel.textColor = UI.Color.errorFont
+			self.resultLabel.text = error.localizedDescription
 		}
 	}
 }
