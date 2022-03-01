@@ -24,18 +24,20 @@ final class CurrencyViewModelTest: XCTestCase {
 	}
 	
 	func test_shouldGetDatawhenTheRequestIsSuccessfulForGetNewestCurrencyUsecase() {
-		let expect = currency
-		
+		stubUsecase.isSuccessful = true
+	
 		viewModel.requestNewestCurrency()
 		
+		let expect = currency
 		XCTAssertEqual(expect, viewModel.currency)
 	}
 	
 	func test_shouldGetErrorWhenTheRequestForTheGetNewestCurrencyUsecaseFails() {
-		let expect = ServerError.unknowned
+		stubUsecase.isSuccessful = false
 		
 		viewModel.requestNewestCurrency()
 		
+		let expect = ServerError.unknowned
 		XCTAssertEqual(expect, viewModel.error)
 	}
 }

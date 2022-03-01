@@ -13,6 +13,7 @@ final class CurrencyViewModel {
 	
 	// MARK: - Properties
 	var currency: Currency? = nil
+	var error: ServerError? = nil
 	
 	init(usecase: GetNewestCurrencyUsecase) {
 		self.usecase = usecase
@@ -24,8 +25,8 @@ final class CurrencyViewModel {
 			switch result {
 			case .success(let currency):
 				self.currency = currency
-			case .failure:
-				break
+			case .failure(let error):
+				self.error = error
 			}
 		}
 	}
