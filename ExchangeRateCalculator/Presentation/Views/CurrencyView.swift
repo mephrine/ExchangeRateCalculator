@@ -217,20 +217,29 @@ final class CurrencyView: UIView {
 // MARK: - Actions
 extension CurrencyView {
 	func changeCurrency(by currency: Currency, and receiptCountry: ReceiptCountry) {
-		let currencyAmount = String(describing: currency.find(by: receiptCountry))
-		self.receiptCountryInfoLabel.text = receiptCountry.countryUnit
-		self.inquiryTimeInfoLabel.text = currency.inquiryTime
-		self.currencyInfoLabel.text = "\(currencyAmount) \(receiptCountry.currencyUnit) / USD"
+		let currencyAmount = String(describing: currency.find(by: receiptCountry) ?? 0)
+		DispatchQueue.main.async { [weak self] in
+			guard let self = self else { return }
+			self.receiptCountryInfoLabel.text = receiptCountry.countryUnit
+			self.inquiryTimeInfoLabel.text = currency.inquiryTime
+			self.currencyInfoLabel.text = "\(currencyAmount) \(receiptCountry.currencyUnit) / USD"
+		}
 	}
 	
 	func changeAmountReceived(by amountReceived: AmountReceived) {
-		self.currencyInfoLabel.textColor = UI.Color.infoFont
-		self.currencyInfoLabel.text = "수취금액은 \(amountReceived.amount) 입니다."
+		DispatchQueue.main.async { [weak self] in
+			guard let self = self else { return }
+			self.currencyInfoLabel.textColor = UI.Color.infoFont
+			self.currencyInfoLabel.text = "수취금액은 \(amountReceived.amount) 입니다."
+		}
 	}
 	
 	func showErrorMessage(of error: Error) {
-		self.currencyInfoLabel.textColor = UI.Color.errorFont
-		self.currencyInfoLabel.text = error.localizedDescription
+		DispatchQueue.main.async { [weak self] in
+			guard let self = self else { return }
+			self.currencyInfoLabel.textColor = UI.Color.errorFont
+			self.currencyInfoLabel.text = error.localizedDescription
+		}
 	}
 }
 

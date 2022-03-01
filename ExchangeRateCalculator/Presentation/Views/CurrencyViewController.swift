@@ -17,9 +17,7 @@ class CurrencyViewController: UIViewController {
 	private let pickerItems = ReceiptCountry.allCases
 	
 	// MARK: - Views
-	private var currencyView: CurrencyView {
-		self.view as! CurrencyView
-	}
+	private let currencyView = CurrencyView()
 	
 	private lazy var countryPickerView: UIPickerView = {
 		let pickerView = UIPickerView()
@@ -42,7 +40,7 @@ class CurrencyViewController: UIViewController {
 	
 	// MARK: - LifeCycle
 	override func loadView() {
-		self.view = CurrencyView()
+		self.view = currencyView
 	}
 
 	override func viewDidLoad() {
