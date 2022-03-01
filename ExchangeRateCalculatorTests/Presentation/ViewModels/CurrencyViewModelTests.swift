@@ -10,8 +10,6 @@ import XCTest
 @testable import ExchangeRateCalculator
 
 final class CurrencyViewModelTest: XCTestCase {
-	var viewModel: CurrencyViewModel!
-	var stubUsecase: StubGetNewestCurrency!
 	private let currency = Currency(currencies: [
 		"KRW" :  1192.9398794964,
 		"JPY": 115.0967667032,
@@ -19,33 +17,36 @@ final class CurrencyViewModelTest: XCTestCase {
 	])
 	
 	override func setUpWithError() throws {
-		stubUsecase = StubGetNewestCurrency(currency: currency, error: ServerError.unknowned)
-		viewModel = CurrencyViewModel(usecase: stubUsecase)
+		
 	}
 	
 	func test_shouldGetDatawhenTheRequestIsSuccessfulForGetNewestCurrencyUsecase() {
-		stubUsecase.isSuccessful = true
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 	
 		viewModel.requestNewestCurrency()
 		
-		let expect = currency
-		XCTAssertEqual(expect, viewModel.currency)
+		let expectResult = currency
+		waitForExpectations(timeout: 3, handler: nil)
+		XCTAssertEqual(expectResult, viewModel.currency)
 	}
 	
 	func test_shouldGetErrorWhenTheRequestForTheGetNewestCurrencyUsecaseFails() {
-		stubUsecase.isSuccessful = false
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect, isSuccessful: false))
 		
 		viewModel.requestNewestCurrency()
 		
-		let expect = ServerError.unknowned
-		XCTAssertEqual(expect, viewModel.error)
+		let expectResult = ServerError.unknowned
+		waitForExpectations(timeout: 3, handler: nil)
+		XCTAssertEqual(expectResult, viewModel.error)
 	}
 	
 	func test_shouldBeCalledOnlyTheLastAPIWhenTheViewModelMakesMulipleRequests() {
 		let expect = expectation(description: "requestNewestCurrency")
 		let stubUsecase = StubGetNewestCurrency(currency: currency, error: ServerError.unknowned, expectation: expect)
-		let viewModel = CurrencyViewModel(usecase: stubUsecase)
 		stubUsecase.isSuccessful = true
+		let viewModel = CurrencyViewModel(usecase: stubUsecase)
 		
 		viewModel.requestNewestCurrency()
 		viewModel.requestNewestCurrency()
@@ -54,10 +55,16 @@ final class CurrencyViewModelTest: XCTestCase {
 		
 		let expectResult = currency
 		let verify = 1
-		
 		waitForExpectations(timeout: 3, handler: nil)
-		
 		XCTAssertEqual(expectResult, viewModel.currency)
 		XCTAssertEqual(stubUsecase.callCount, verify)
+	}
+}
+
+fileprivate extension CurrencyViewModelTest {
+	func makeStubUsecase(expectation: XCTestExpectation, isSuccessful: Bool = true) -> StubGetNewestCurrency {
+		let stubUsecase = StubGetNewestCurrency(currency: currency, error: ServerError.unknowned, expectation: expectation)
+		stubUsecase.isSuccessful = isSuccessful
+		return stubUsecase
 	}
 }

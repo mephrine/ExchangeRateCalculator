@@ -8,26 +8,47 @@
 import Foundation
 
 final class CurrencyViewModel {
+	private enum Options {
+		static let requestIntervalTime = 300
+	}
+	
 	// MARK: - Inject
 	private let usecase: GetNewestCurrencyUsecase
 	
 	// MARK: - Properties
 	var currency: Currency? = nil
 	var error: ServerError? = nil
+	var usecaseExcute: DispatchWorkItem?
 	
 	init(usecase: GetNewestCurrencyUsecase) {
 		self.usecase = usecase
 	}
 	
 	func requestNewestCurrency() {
-		usecase.excute { [weak self] result in
+		if usecaseExcute?.isCancelled == false {
+			usecaseExcute?.cancel()
+		}
+		let dispatchWorkItem = makeUsecaseExcuteDispatchWorkItem()
+		self.usecaseExcute = dispatchWorkItem
+		DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + .milliseconds(Options.requestIntervalTime), execute: dispatchWorkItem)
+	}
+	
+	private func makeUsecaseExcuteDispatchWorkItem() -> DispatchWorkItem {
+		DispatchWorkItem { [weak self] in
 			guard let self = self else { return }
-			switch result {
-			case .success(let currency):
-				self.currency = currency
-			case .failure(let error):
-				self.error = error
+			self.usecase.excute { result in
+				switch result {
+				case .success(let currency):
+					self.currency = currency
+				case .failure(let error):
+					self.error = error
+				}
 			}
 		}
+	}
+	
+	private func removeViewAfter(duringTime: Double) {
+		guard let clearExcute = self.usecaseExcute else { return }
+		DispatchQueue.main.asyncAfter(deadline: .now() + duringTime, execute: clearExcute)
 	}
 }
