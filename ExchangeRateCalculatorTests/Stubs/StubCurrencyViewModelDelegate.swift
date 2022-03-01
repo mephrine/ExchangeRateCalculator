@@ -10,16 +10,11 @@ import Foundation
 
 final class StubCurrencyViewModelDelegate: CurrencyViewModelDelegate {
 	var currency: Currency?
-	var remittance: Remittance?
 	var error: Error?
-	
+	var amountReceived: AmountReceived?
 	
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeCurrency currency: Currency) {
 		self.currency = currency
-	}
-	
-	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeRemittance remittance: Remittance) {
-		self.remittance = remittance
 	}
 	
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurServerError error: ServerError) {
@@ -30,5 +25,12 @@ final class StubCurrencyViewModelDelegate: CurrencyViewModelDelegate {
 		self.error = error
 	}
 	
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeAmountReceived amountReceived: AmountReceived) {
+		self.amountReceived = amountReceived
+	}
+	
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurExchangeRateCalculatorValueError error: ExchangeRateCalculator.ValueError) {
+		self.error = error
+	}
 	
 }

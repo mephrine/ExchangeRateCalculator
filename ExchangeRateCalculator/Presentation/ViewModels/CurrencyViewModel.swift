@@ -6,12 +6,19 @@
 //
 
 import Foundation
+import UIKit
 
 protocol CurrencyViewModelDelegate: AnyObject {
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeCurrency currency: Currency)
-	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeRemittance remittance: Remittance)
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeAmountReceived amountReceived: AmountReceived)
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurServerError error: ServerError)
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurRemittanceValueError error: Remittance.ValueError)
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurExchangeRateCalculatorValueError error: ExchangeRateCalculator.ValueError)
+}
+
+protocol CurrencyViewAction {
+	func loadedView()
+	func changedRemittanceTextField(to remittance: String)
 }
 
 final class CurrencyViewModel {
@@ -26,17 +33,15 @@ final class CurrencyViewModel {
 	weak var delegate: CurrencyViewModelDelegate?
 	
 	// MARK: - Properties
-	var currency: Currency? = nil
-	var usecaseExcute: DispatchWorkItem?
+	private var usecaseExcute: DispatchWorkItem?
+	private var currency: Currency? = nil
+	private var receiptCounty: ReceiptCountry = .korea
 	
 	init(usecase: GetNewestCurrencyUsecase) {
 		self.usecase = usecase
-	}	
-}
-
-// MARK: - Actions
-extension CurrencyViewModel {
-	func requestNewestCurrency() {
+	}
+	
+	private func requestNewestCurrency() {
 		if usecaseExcute?.isCancelled == false {
 			usecaseExcute?.cancel()
 		}
@@ -44,14 +49,33 @@ extension CurrencyViewModel {
 		self.usecaseExcute = dispatchWorkItem
 		DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + .milliseconds(Options.requestIntervalTime), execute: dispatchWorkItem)
 	}
+}
+
+// MARK: - Actions
+extension CurrencyViewModel: CurrencyViewAction {
+	func loadedView() {
+		requestNewestCurrency()
+	}
 	
 	func changedRemittanceTextField(to remittance: String) {
 		do {
+			guard let currentCurrency = currency else { return }
 			let changedRemittance = try Remittance(remittance: remittance)
-			self.delegate?.currencyViewModel(self, didChangeRemittance: changedRemittance)
+			let amountReceived = try ExchangeRateCalculator.calculate(with: receiptCounty, and: currentCurrency, remittance: changedRemittance)
+			self.delegate?.currencyViewModel(self, didChangeAmountReceived: amountReceived)
 		} catch {
-			guard let valueError = error as? Remittance.ValueError else { return }
+			sendErrorToDeleagte(error)
+		}
+	}
+	
+	private func sendErrorToDeleagte(_ error: Error) {
+		if let valueError = error as? Remittance.ValueError {
 			delegate?.currencyViewModel(self, didOccurRemittanceValueError: valueError)
+			return
+		}
+		
+		if let valueError = error as? ExchangeRateCalculator.ValueError {
+			delegate?.currencyViewModel(self, didOccurExchangeRateCalculatorValueError: valueError)
 		}
 	}
 }

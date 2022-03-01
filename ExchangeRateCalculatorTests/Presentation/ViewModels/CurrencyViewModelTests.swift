@@ -27,11 +27,11 @@ final class CurrencyViewModelTest: XCTestCase {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
 	
-		viewModel.requestNewestCurrency()
+		viewModel.loadedView()
 		
 		let expectResult = currency
 		waitForExpectations(timeout: 3, handler: nil)
-		XCTAssertEqual(expectResult, viewModel.currency)
+		XCTAssertEqual(expectResult, stubDelegate.currency)
 	}
 	
 	func test_shouldGetErrorWhenTheRequestForTheGetNewestCurrencyUsecaseFails() {
@@ -39,7 +39,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect, isSuccessful: false))
 		viewModel.delegate = stubDelegate
 		
-		viewModel.requestNewestCurrency()
+		viewModel.loadedView()
 		
 		let expectResult = ServerError.unknowned
 		waitForExpectations(timeout: 3, handler: nil)
@@ -53,31 +53,39 @@ final class CurrencyViewModelTest: XCTestCase {
 		let viewModel = CurrencyViewModel(usecase: stubUsecase)
 		viewModel.delegate = stubDelegate
 		
-		viewModel.requestNewestCurrency()
-		viewModel.requestNewestCurrency()
-		viewModel.requestNewestCurrency()
-		viewModel.requestNewestCurrency()
+		viewModel.loadedView()
+		viewModel.loadedView()
+		viewModel.loadedView()
+		viewModel.loadedView()
 		
 		let expectResult = currency
 		let verify = 1
 		waitForExpectations(timeout: 3, handler: nil)
-		XCTAssertEqual(expectResult, viewModel.currency)
+		XCTAssertEqual(expectResult, stubDelegate.currency)
 		XCTAssertEqual(stubUsecase.callCount, verify)
 	}
 	
 	func test_shoudGetResultWhenTheRemittanceAmountIsIncludedBetween1And10000() {
-		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
+		viewModel.loadedView()
 		
-		(1...10000).forEach { number in
+		waitForExpectations(timeout: 3, handler: nil)
+		
+		[1, 11, 329, 499, 9999, 10000].forEach { number in
 			viewModel.changedRemittanceTextField(to: String(number))
-			XCTAssertEqual(stubDelegate.remittance?.amount, number)
+			XCTAssertNotNil(stubDelegate.amountReceived)
 		}
 	}
 	
 	func test_shouldThrowOutOfRangeErrorWhenTheRemittanceAmountIsoutOfRangeFrom1To10000() {
-		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
+		viewModel.loadedView()
+		
+		waitForExpectations(timeout: 3, handler: nil)
 		
 		viewModel.changedRemittanceTextField(to: String(-1))
 		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.outOfRange)
@@ -88,8 +96,12 @@ final class CurrencyViewModelTest: XCTestCase {
 	}
 	
 	func test_shouldThrowIsNotNumericErrorWhenTheRemittanceAmountIsNotNumeric() {
-		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
+		viewModel.loadedView()
+		
+		waitForExpectations(timeout: 3, handler: nil)
 		
 		viewModel.changedRemittanceTextField(to: "abcd")
 		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.isNotNumereic)
@@ -102,8 +114,12 @@ final class CurrencyViewModelTest: XCTestCase {
 	}
 	
 	func test_shouldGetTheAmountReceivedWhenTheRemittanceChanges() {
-		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
+		viewModel.loadedView()
+		
+		waitForExpectations(timeout: 3, handler: nil)
 		
 		viewModel.changedRemittanceTextField(to: "1")
 		XCTAssertEqual(stubDelegate.amountReceived?.amount, "1,192.93 KRW")
