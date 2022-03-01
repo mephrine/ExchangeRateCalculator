@@ -69,7 +69,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		}
 	}
 	
-	func test_shouldThrowIsNotNumericErrorWhenTheRemittanceAmountIsoutOfRangeFrom1To10000() throws {
+	func test_shouldThrowOutOfRangeErrorWhenTheRemittanceAmountIsoutOfRangeFrom1To10000() throws {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
 		
 		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: String(-1)), "-1 isn't included in the range") { error in
@@ -79,6 +79,17 @@ final class CurrencyViewModelTest: XCTestCase {
 			}
 			XCTAssertEqual(valueError, Remittance.ValueError.outOfRange)
 		}
+		
+		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: String(10001)), "-1 isn't included in the range") { error in
+			guard let valueError = error as? Remittance.ValueError else {
+				XCTFail("Isn't value error")
+				return
+			}
+			XCTAssertEqual(valueError, Remittance.ValueError.outOfRange)
+		}
+		
+		XCTAssertNoThrow(try viewModel.changedRemittanceTextField(to: String(10000)))
+		XCTAssertNoThrow(try viewModel.changedRemittanceTextField(to: String(1)))
 	}
 }
 
