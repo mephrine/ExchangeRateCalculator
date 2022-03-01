@@ -8,9 +8,13 @@
 import Foundation
 
 struct Remittance {
-	enum ValueError: Error {
+	enum ValueError: Error, LocalizedError {
 		case isNotNumereic
 		case outOfRange
+		
+		var errorDescription: String? {
+			"송금액이 바르지 않습니다"
+		}
 	}
 	
 	let amount: Int

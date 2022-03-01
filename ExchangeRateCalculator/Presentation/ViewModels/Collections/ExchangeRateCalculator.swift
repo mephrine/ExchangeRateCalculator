@@ -8,9 +8,13 @@
 import Foundation
 
 enum ExchangeRateCalculator {
-	enum ValueError: Error {
+	enum ValueError: Error, LocalizedError {
 		case invalidKey
 		case invalidFormat
+		
+		var errorDescription: String? {
+			"송금액이 바르지 않습니다"
+		}
 	}
 	
 	static func calculate(with receiptCountry: ReceiptCountry, and currency: Currency, remittance: Remittance) throws -> AmountReceived {

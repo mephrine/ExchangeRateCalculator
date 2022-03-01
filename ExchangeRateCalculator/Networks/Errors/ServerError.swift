@@ -14,3 +14,9 @@ enum ServerError: Error, CaseIterable {
 	case invalidURL
 	case unknowned
 }
+
+extension ServerError: LocalizedError {
+	var errorDescription: String? {
+		"서버 통신 중에 에러가 발생했습니다."
+	}
+}
