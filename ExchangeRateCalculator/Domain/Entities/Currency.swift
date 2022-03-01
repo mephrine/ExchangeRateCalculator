@@ -9,6 +9,7 @@ import Foundation
 
 struct Currency: Equatable {
 	let currencies: [String: Double]
+	let inquiryTime: String
 }
 
 fileprivate extension Currency {

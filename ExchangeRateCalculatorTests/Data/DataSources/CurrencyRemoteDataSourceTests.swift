@@ -12,7 +12,7 @@ import XCTest
 class CurrencyRemoteDataSourceTests: XCTestCase {
 	private let currencyModel = CurrencyModel(
 		remittanceCountry: "USD",
-		timestamp: "2022-02-23T00:00:00Z",
+		timestamp: "2022-02-23T00:00:00Z".convertToDate(of: "yyyy-MM-dd'T'HH:mm:ssZ")!,
 		recipientCoutries: [
 			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "KRW", mid: 1192.9398794964),
 			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "JPY", mid: 115.0967667032),

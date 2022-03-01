@@ -20,24 +20,22 @@ class CurrencyModelTests: XCTestCase {
 		]
 		currencyModel = CurrencyModel(
 			remittanceCountry: "USD",
-			timestamp: "2022-02-23T00:00:00Z",
+			timestamp: "2022-02-23T00:00:00Z".convertToDate(of: "yyyy-MM-dd'T'HH:mm:ssZ")!,
 			recipientCoutries: changedCurrencyModel)
 	}
 	
 	func test_shouldReturnValidModelWhenTheJsonStringIsParsed() throws {
 		let jsonData = CurrencyModelFixture.data
-		let jsonDecoder = JSONDecoder()
 		
-		let result = try jsonDecoder.decode(CurrencyModel.self, from: jsonData)
+		let result = try JSONDecoder().parse(from: jsonData, to: CurrencyModel.self)
 		let expect = currencyModel
 		XCTAssertEqual(result, expect)
 	}
 	
-	func test_shouldReturnNilWhenTheJsonDataIsInvalid() {
-		let jsonData = "invalid".data(using: .utf8)
-		let jsonDecoder = JSONDecoder()
+	func test_shouldReturnNilWhenTheJsonDataIsInvalid() throws {
+		let jsonData = "invalid".data(using: .utf8)!
 		
-		let result = try? jsonDecoder.decode(CurrencyModel.self, from: jsonData!)
+		let result = try JSONDecoder().parse(from: jsonData, to: CurrencyModel.self)
 		XCTAssertEqual(result, nil)
 	}
 }

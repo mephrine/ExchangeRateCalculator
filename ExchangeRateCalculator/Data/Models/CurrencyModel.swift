@@ -9,7 +9,7 @@ import Foundation
 
 struct CurrencyModel: Decodable {
 	let remittanceCountry: String
-	let timestamp: String
+	let timestamp: Date
 	let recipientCoutries: [ChangedCurrencyModel]
 	
 	enum CodingKeys: String, CodingKey {
@@ -36,6 +36,10 @@ extension CurrencyModel {
 		self.recipientCoutries.forEach {
 			currencies[$0.quoteCurrency] = $0.mid
 		}
-		return Currency(currencies: currencies)
+		
+		return Currency(
+			currencies: currencies,
+			inquiryTime: timestamp.convertToString(of: "yyyy-MM-dd HH:mm")
+		)
 	}
 }
