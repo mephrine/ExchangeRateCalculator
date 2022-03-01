@@ -32,10 +32,11 @@ class CurrencyModelTests: XCTestCase {
 		XCTAssertEqual(result, expect)
 	}
 	
-	func test_shouldReturnNilWhenTheJsonDataIsInvalid() throws {
-		let jsonData = "invalid".data(using: .utf8)!
+	func test_shouldReturnNilWhenTheJsonDataIsInvalid() {
+		let jsonData = "invalid".data(using: .utf8)
+		let jsonDecoder = JSONDecoder()
 		
-		let result = try JSONDecoder().parse(from: jsonData, to: CurrencyModel.self)
+		let result = try? jsonDecoder.decode(CurrencyModel.self, from: jsonData!)
 		XCTAssertEqual(result, nil)
 	}
 }

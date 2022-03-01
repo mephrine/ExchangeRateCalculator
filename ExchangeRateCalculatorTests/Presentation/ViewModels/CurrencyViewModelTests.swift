@@ -30,7 +30,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.loadedView()
 		
 		let expectResult = currency
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		XCTAssertEqual(expectResult, stubDelegate.currency)
 	}
 	
@@ -42,7 +42,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.loadedView()
 		
 		let expectResult = ServerError.unknowned
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		XCTAssertEqual(expectResult, stubDelegate.error as? ServerError)
 	}
 	
@@ -60,7 +60,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		
 		let expectResult = currency
 		let verify = 1
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		XCTAssertEqual(expectResult, stubDelegate.currency)
 		XCTAssertEqual(stubUsecase.callCount, verify)
 	}
@@ -71,7 +71,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.delegate = stubDelegate
 		viewModel.loadedView()
 		
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		
 		[1, 11, 329, 499, 9999, 10000].forEach { number in
 			viewModel.changedRemittanceTextField(to: String(number))
@@ -85,7 +85,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.delegate = stubDelegate
 		viewModel.loadedView()
 		
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		
 		viewModel.changedRemittanceTextField(to: String(-1))
 		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.outOfRange)
@@ -101,7 +101,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.delegate = stubDelegate
 		viewModel.loadedView()
 		
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		
 		viewModel.changedRemittanceTextField(to: "abcd")
 		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.isNotNumereic)
@@ -119,7 +119,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.delegate = stubDelegate
 		viewModel.loadedView()
 		
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		
 		viewModel.changedRemittanceTextField(to: "1")
 		XCTAssertEqual(stubDelegate.amountReceived?.amount, "1,192.93 KRW")
@@ -131,9 +131,22 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.delegate = stubDelegate
 		viewModel.loadedView()
 		
-		waitForExpectations(timeout: 3, handler: nil)
+		waitForExpectations(timeout: 5, handler: nil)
 		
 		XCTAssertEqual(stubDelegate.currency?.inquiryTime, "2022-02-23 09:00")
+	}
+	
+	func test_shouldChangeCurrencyAndCountryWhenTheSelectedReceiptCountryPickerItemMethodOfTheViewModelIsCalled() {
+		let expect = expectation(description: "requestNewestCurrency")
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
+		viewModel.delegate = stubDelegate
+	
+		viewModel.selectedReceiptCountryPickerItem(ReceiptCountry.korea)
+		
+		let expectResult = (currency: currency, country: ReceiptCountry.korea)
+		waitForExpectations(timeout: 5, handler: nil)
+		XCTAssertEqual(expectResult.currency, stubDelegate.currency)
+		XCTAssertEqual(expectResult.country, stubDelegate.country)
 	}
 }
 

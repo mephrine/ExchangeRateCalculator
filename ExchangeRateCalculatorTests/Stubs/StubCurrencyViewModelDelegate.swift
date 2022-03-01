@@ -10,11 +10,13 @@ import Foundation
 
 final class StubCurrencyViewModelDelegate: CurrencyViewModelDelegate {
 	var currency: Currency?
+	var country: ReceiptCountry?
 	var error: Error?
 	var amountReceived: AmountReceived?
 	
-	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeCurrency currency: Currency) {
+	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didChangeCurrency currency: Currency, of country: ReceiptCountry) {
 		self.currency = currency
+		self.country = country
 	}
 	
 	func currencyViewModel(_ currencyViewModel: CurrencyViewModel, didOccurServerError error: ServerError) {
