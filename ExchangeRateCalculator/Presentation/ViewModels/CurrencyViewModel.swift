@@ -17,7 +17,7 @@ final class CurrencyViewModel {
 	
 	// MARK: - Properties
 	var currency: Currency? = nil
-	var error: ServerError? = nil
+	var error: Error? = nil
 	var usecaseExcute: DispatchWorkItem?
 	var remittance: Int = 0
 	
@@ -34,13 +34,9 @@ final class CurrencyViewModel {
 		DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + .milliseconds(Options.requestIntervalTime), execute: dispatchWorkItem)
 	}
 	
-	func changedRemittanceTextField(to remittance: String) {
-		do {
-			let changedRemittance = try Remittance(remittance: remittance)
-			self.remittance = changedRemittance.amount
-		} catch {
-			
-		}
+	func changedRemittanceTextField(to remittance: String) throws {
+		let changedRemittance = try Remittance(remittance: remittance)
+		self.remittance = changedRemittance.amount
 	}
 	
 	private func makeUsecaseExcuteDispatchWorkItem() -> DispatchWorkItem {

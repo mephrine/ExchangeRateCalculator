@@ -39,7 +39,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		
 		let expectResult = ServerError.unknowned
 		waitForExpectations(timeout: 3, handler: nil)
-		XCTAssertEqual(expectResult, viewModel.error)
+		XCTAssertEqual(expectResult, viewModel.error as? ServerError)
 	}
 	
 	func test_shouldBeCalledOnlyTheLastAPIWhenTheViewModelMakesMulipleRequests() {
@@ -60,12 +60,24 @@ final class CurrencyViewModelTest: XCTestCase {
 		XCTAssertEqual(stubUsecase.callCount, verify)
 	}
 	
-	func test_shoudGetResultWhenTheRemittanceAmountIsIncludedBetween1And10000() {
+	func test_shoudGetResultWhenTheRemittanceAmountIsIncludedBetween1And10000() throws {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
 		
 		(1...10000).forEach { number in
-			viewModel.changedRemittanceTextField(to: String(number))
+			try? viewModel.changedRemittanceTextField(to: String(number))
 			XCTAssertEqual(viewModel.remittance, number)
+		}
+	}
+	
+	func test_shouldThrowIsNotNumericErrorWhenTheRemittanceAmountIsoutOfRangeFrom1To10000() throws {
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		
+		XCTAssertThrowsError(try viewModel.changedRemittanceTextField(to: String(-1)), "-1 isn't included in the range") { error in
+			guard let valueError = error as? Remittance.ValueError else {
+				XCTFail("Isn't value error")
+				return
+			}
+			XCTAssertEqual(valueError, Remittance.ValueError.outOfRange)
 		}
 	}
 }
