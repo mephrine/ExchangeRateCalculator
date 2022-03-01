@@ -100,6 +100,14 @@ final class CurrencyViewModelTest: XCTestCase {
 		viewModel.changedRemittanceTextField(to: "가나다라마바사아")
 		XCTAssertEqual(stubDelegate.error! as! Remittance.ValueError, Remittance.ValueError.isNotNumereic)
 	}
+	
+	func test_shouldGetTheAmountReceivedWhenTheRemittanceChanges() {
+		let viewModel = CurrencyViewModel(usecase: makeStubUsecase())
+		viewModel.delegate = stubDelegate
+		
+		viewModel.changedRemittanceTextField(to: "1")
+		XCTAssertEqual(stubDelegate.amountReceived?.amount, "1,192.93 KRW")
+	}
 }
 
 fileprivate extension CurrencyViewModelTest {
