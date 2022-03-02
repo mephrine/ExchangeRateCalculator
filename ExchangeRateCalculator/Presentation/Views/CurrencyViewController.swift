@@ -10,6 +10,8 @@ import UIKit
 class CurrencyViewController: UIViewController {
 	private enum UI {
 		static let remittanceTextFieldMaxLength: Int = 5
+		static let animationDuration: CGFloat = 0.3
+		static let countryToolBarHeight: CGFloat = 45
 	}
 	
 	// MARK: - Properties
@@ -74,6 +76,16 @@ extension  CurrencyViewController {
 	}
 	
 	private func showPickerView() {
+		makePickerView()
+		showPickerViewWithFadeInAnimation()
+	}
+	
+	@objc func didTapDoneButton() {
+		hidePickerViewWithFadeOutAnimation()
+		viewModel.selectedReceiptCountryPickerItem(pickerItems[selectedCountryIndex], remittanceAmount: currencyView.remittanceTextField.text)
+	}
+	
+	private func makePickerView() {
 		countryPickerView = UIPickerView()
 		countryPickerView?.delegate = self
 		countryPickerView?.dataSource  = self
@@ -88,24 +100,44 @@ extension  CurrencyViewController {
 		
 		countryPickerView?.selectRow(selectedCountryIndex, inComponent: 0, animated: true)
 		
-		countryToolBar = UIToolbar()
-		countryToolBar?.items = [
+		countryToolBar = UIToolbar(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UI.countryToolBarHeight))
+		countryToolBar?.setItems([
 			UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(didTapDoneButton))
-		]
+		], animated: true)
 		self.view.addSubview(countryToolBar!)
 		
 		countryToolBar?.translatesAutoresizingMaskIntoConstraints = false
 		NSLayoutConstraint.activate([
 			countryToolBar!.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
 			countryToolBar!.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-			countryToolBar!.bottomAnchor.constraint(equalTo: countryPickerView!.topAnchor)
+			countryToolBar!.bottomAnchor.constraint(equalTo: self.countryPickerView!.topAnchor)
 		])
 	}
 	
-	@objc func didTapDoneButton() {
-		countryPickerView?.removeFromSuperview()
-		countryToolBar?.removeFromSuperview()
-		viewModel.selectedReceiptCountryPickerItem(pickerItems[selectedCountryIndex], remittanceAmount: currencyView.remittanceTextField.text)
+	private func showPickerViewWithFadeInAnimation() {
+		countryPickerView?.alpha = 0
+		countryToolBar?.alpha = 0
+		UIView.animate(withDuration: UI.animationDuration,
+									 delay: 0,
+									 options: []) {
+			self.countryPickerView?.alpha = 1
+			self.countryToolBar?.alpha = 1
+		} completion: { completed in
+		}
+	}
+	
+	private func hidePickerViewWithFadeOutAnimation() {
+		countryPickerView?.alpha = 1
+		countryToolBar?.alpha = 1
+		UIView.animate(withDuration: UI.animationDuration,
+									 delay: 0,
+									 options: []) {
+			self.countryPickerView?.alpha = 0
+			self.countryToolBar?.alpha = 0
+		} completion: { completed in
+			self.countryPickerView?.removeFromSuperview()
+			self.countryToolBar?.removeFromSuperview()
+		}
 	}
 }
 
