@@ -19,7 +19,7 @@ final class CurrencyView: UIView {
 		static let infoTitleLabelWidth: CGFloat = 55
 		static let remittanceTextFieldWidth: CGFloat = 100
 		static let remittanceTextFieldBorderWidth: CGFloat = 1
-		
+		static let animationDuration: CGFloat = 0.3
 		
 		enum Color {
 			static let background: UIColor = .white
@@ -218,11 +218,26 @@ final class CurrencyView: UIView {
 extension CurrencyView {
 	func changeCurrency(by currency: Currency, and receiptCountry: ReceiptCountry) {
 		let currencyAmount = currency.find(by: receiptCountry)?.convertToCurrencyFormat() ?? "0"
+		
+		
 		DispatchQueue.main.async { [weak self] in
 			guard let self = self else { return }
 			self.receiptCountryInfoLabel.text = receiptCountry.countryUnit
 			self.inquiryTimeInfoLabel.text = currency.inquiryTime
 			self.currencyInfoLabel.text = "\(currencyAmount) \(receiptCountry.currencyUnit) / USD"
+			
+			self.receiptCountryInfoLabel.alpha = 0
+			self.inquiryTimeInfoLabel.alpha = 0
+			self.currencyInfoLabel.alpha = 0
+			
+			UIView.animate(withDuration: UI.animationDuration,
+										 delay: 0,
+										 options: []) {
+				self.receiptCountryInfoLabel.alpha = 1
+				self.inquiryTimeInfoLabel.alpha = 1
+				self.currencyInfoLabel.alpha = 1
+			}
+			
 		}
 	}
 	
