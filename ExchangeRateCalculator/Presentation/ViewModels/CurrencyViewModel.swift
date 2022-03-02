@@ -81,6 +81,7 @@ extension CurrencyViewModel: CurrencyViewAction {
 	}
 	
 	func selectedReceiptCountryPickerItem(_ item: ReceiptCountry, remittanceAmount: String?) {
+		guard receiptCounty != item else { return }
 		receiptCounty = item
 		requestNewestCurrency(remittanceAmount: remittanceAmount)
 	}
@@ -96,7 +97,7 @@ fileprivate extension CurrencyViewModel {
 				case .success(let currency):
 					self.delegate?.currencyViewModel(self, didChangeCurrency: currency, of: self.receiptCounty)
 					self.currency = currency
-					if let remittance = remittanceAmount {
+					if let remittance = remittanceAmount, remittance.isEmpty == false {
 						self.changedRemittanceTextField(to: remittance)
 					}
 				case .failure(let error):
