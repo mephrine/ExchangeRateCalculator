@@ -10,7 +10,7 @@ import Foundation
 extension JSONDecoder {
 	func parse<T: Decodable>(from data: Data, to type: T.Type) throws -> T {
 		let decoder = JSONDecoder()
-		decoder.dateDecodingStrategy = .iso8601
+		decoder.dateDecodingStrategy = .secondsSince1970
 		return try decoder.decode(T.self, from: data)
 	}
 }

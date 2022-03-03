@@ -715,8 +715,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				AUTHORIZATION = "Basic amFlaHl1bmtpbTM4MzQ0ODg1MTplYjI1YzJidjN1cmpqcmN2MGZyZWRvczZscQ==";
-				BASE_URL = "https://xecdapi.xe.com";
+				AUTHORIZATION = 49d5c76ba387012f1d45329a2ad2a77f;
+				BASE_URL = "http://api.currencylayer.com";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -746,8 +746,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				AUTHORIZATION = "Basic amFlaHl1bmtpbTM4MzQ0ODg1MTplYjI1YzJidjN1cmpqcmN2MGZyZWRvczZscQ==";
-				BASE_URL = "https://xecdapi.xe.com";
+				AUTHORIZATION = 49d5c76ba387012f1d45329a2ad2a77f;
+				BASE_URL = "http://api.currencylayer.com";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";

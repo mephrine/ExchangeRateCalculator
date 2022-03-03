@@ -29,12 +29,8 @@ enum Networking {
 					let requestURL = components.url
 		else { return nil }
 	
-		let authorization = Environment.authorization
 		var request = URLRequest(url: requestURL, timeoutInterval: Networking.timeOutDuration)
 		request.httpMethod  = "GET"
-		request.allHTTPHeaderFields = [
-			"Authorization": authorization
-		]
 		
 		return request
 	}

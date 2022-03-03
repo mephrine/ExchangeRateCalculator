@@ -8,23 +8,18 @@
 import Foundation
 
 struct CurrencyModel: Decodable {
-	let remittanceCountry: String
 	let timestamp: Date
-	let recipientCoutries: [ChangedCurrencyModel]
-	
-	enum CodingKeys: String, CodingKey {
-		case remittanceCountry = "from"
-		case timestamp
-		case recipientCoutries = "to"
-	}
+	let quotes: ChangedCurrencyModel
 	
 	struct ChangedCurrencyModel: Decodable {
-		let quoteCurrency: String
-		let mid: Double
+		let krw: Double
+		let jpy: Double
+		let php: Double
 		
 		enum CodingKeys: String, CodingKey {
-			case quoteCurrency  = "quotecurrency"
-			case mid
+			case krw  = "USDKRW"
+			case jpy  = "USDJPY"
+			case php  = "USDPHP"
 		}
 	}
 }
@@ -32,10 +27,11 @@ struct CurrencyModel: Decodable {
 // MARK: - Convert
 extension CurrencyModel {
 	func convertToEntity() -> Currency {
-		var currencies: [String: Double] = [:]
-		self.recipientCoutries.forEach {
-			currencies[$0.quoteCurrency] = $0.mid
-		}
+		let currencies: [String: Double] = [
+			ReceiptCountry.korea.currencyUnit: self.quotes.krw,
+			ReceiptCountry.japan.currencyUnit: self.quotes.jpy,
+			ReceiptCountry.philippines.currencyUnit: self.quotes.php
+		]
 		
 		return Currency(
 			currencies: currencies,
