@@ -14,7 +14,7 @@ class CurrencyRepositoryImplTests: XCTestCase {
 		"KRW" :  1192.9398794964,
 		"JPY": 115.0967667032,
 		"PHP": 51.3268409469
-	], inquiryTime: "2022-02-23 09:00")
+	], inquiryTime: "2018-12-27 12:34")
 	
 	override func setUpWithError() throws {
 		
@@ -55,14 +55,8 @@ class CurrencyRepositoryImplTests: XCTestCase {
 fileprivate extension CurrencyRepositoryImplTests {
 	func makeStubDataSource(error: ServerError, isSuccessful: Bool = true) -> StubCurrencyRemoteDataSource {
 		let currencyModel = CurrencyModel(
-			remittanceCountry: "USD",
-			timestamp: "2022-02-23T00:00:00Z".convertToDate(of: "yyyy-MM-dd'T'HH:mm:ssZ")!,
-			recipientCoutries: [
-				CurrencyModel.ChangedCurrencyModel(quoteCurrency: "KRW", mid: 1192.9398794964),
-				CurrencyModel.ChangedCurrencyModel(quoteCurrency: "JPY", mid: 115.0967667032),
-				CurrencyModel.ChangedCurrencyModel(quoteCurrency: "PHP", mid: 51.3268409469)
-			]
-		)
+			timestamp: Date(timeIntervalSince1970: 1545881647),
+		 quotes: CurrencyModel.ChangedCurrencyModel(krw: 1192.9398794964, jpy: 115.0967667032, php: 51.3268409469))
 		let remoteDataSource = StubCurrencyRemoteDataSource(currencyModel: currencyModel, error: error)
 		remoteDataSource.isSuccessful = isSuccessful
 		

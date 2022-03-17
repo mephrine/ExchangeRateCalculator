@@ -15,7 +15,7 @@ class GetNewestCurrencyTests: XCTestCase {
 		"KRW" :  1192.9398794964,
 		"JPY": 115.0967667032,
 		"PHP": 51.3268409469
-	], inquiryTime: "2022-02-23 09:00")
+	], inquiryTime: "2018-12-27 12:34")
 	
 	override func setUpWithError() throws {
 		stubRespository = StubCurrencyRepository(currency: currency, error: ServerError.parse)

@@ -13,15 +13,10 @@ class CurrencyModelTests: XCTestCase {
 	private var currencyModel: CurrencyModel!
 	
 	override func setUpWithError() throws {
-		let changedCurrencyModel = [
-			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "KRW", mid: 1192.9398794964),
-			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "JPY", mid: 115.0967667032),
-			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "PHP", mid: 51.3268409469)
-		]
+		let changedCurrencyModel = CurrencyModel.ChangedCurrencyModel(krw: 1192.9398794964, jpy: 115.0967667032, php: 51.3268409469)
 		currencyModel = CurrencyModel(
-			remittanceCountry: "USD",
-			timestamp: "2022-02-23T00:00:00Z".convertToDate(of: "yyyy-MM-dd'T'HH:mm:ssZ")!,
-			recipientCoutries: changedCurrencyModel)
+			timestamp: Date(timeIntervalSince1970: 1545881647),
+			quotes: changedCurrencyModel)
 	}
 	
 	func test_shouldReturnValidModelWhenTheJsonStringIsParsed() throws {
@@ -43,16 +38,16 @@ class CurrencyModelTests: XCTestCase {
 
 extension CurrencyModel: Equatable {
 	public static func == (lhs: CurrencyModel, rhs: CurrencyModel) -> Bool {
-		lhs.timestamp == rhs.timestamp && Set(lhs.recipientCoutries).symmetricDifference(Set(rhs.recipientCoutries)).count == 0
+		lhs.timestamp == rhs.timestamp && lhs.quotes == rhs.quotes
 	}
 }
 
 extension CurrencyModel.ChangedCurrencyModel: Hashable, Equatable {
-	public func hash(into hasher: inout Hasher) {
-		hasher.combine(self.quoteCurrency)
+	public static func == (lhs: CurrencyModel.ChangedCurrencyModel, rhs: CurrencyModel.ChangedCurrencyModel) -> Bool {
+		lhs.krw == rhs.krw && lhs.jpy == rhs.jpy &&  lhs.php == rhs.php
 	}
 	
-	public static func == (lhs: CurrencyModel.ChangedCurrencyModel, rhs: CurrencyModel.ChangedCurrencyModel) -> Bool {
-		lhs.mid == rhs.mid && lhs.mid == rhs.mid
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.hashValue)
 	}
 }

@@ -14,7 +14,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		"KRW" :  1192.9398794964,
 		"JPY": 115.0967667032,
 		"PHP": 51.3268409469
-	], inquiryTime: "2022-02-23 09:00")
+	], inquiryTime: "2018-12-27 12:34")
 	
 	private var stubDelegate = StubCurrencyViewModelDelegate()
 	
@@ -133,7 +133,7 @@ final class CurrencyViewModelTest: XCTestCase {
 		
 		waitForExpectations(timeout: 5, handler: nil)
 		
-		XCTAssertEqual(stubDelegate.currency?.inquiryTime, "2022-02-23 09:00")
+		XCTAssertEqual(stubDelegate.currency?.inquiryTime, "2018-12-27 12:34")
 	}
 	
 	func test_shouldChangeCurrencyAndCountryWhenTheSelectedReceiptCountryPickerItemMethodOfTheViewModelIsCalled() {
@@ -141,9 +141,9 @@ final class CurrencyViewModelTest: XCTestCase {
 		let viewModel = CurrencyViewModel(usecase: makeStubUsecase(expectation: expect))
 		viewModel.delegate = stubDelegate
 	
-		viewModel.selectedReceiptCountryPickerItem(ReceiptCountry.korea, remittanceAmount: nil)
+		viewModel.selectedReceiptCountryPickerItem(ReceiptCountry.japan, remittanceAmount: nil)
 		
-		let expectResult = (currency: currency, country: ReceiptCountry.korea)
+		let expectResult = (currency: currency, country: ReceiptCountry.japan)
 		waitForExpectations(timeout: 5, handler: nil)
 		XCTAssertEqual(expectResult.currency, stubDelegate.currency)
 		XCTAssertEqual(expectResult.country, stubDelegate.country)

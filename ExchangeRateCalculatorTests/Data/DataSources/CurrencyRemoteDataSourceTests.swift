@@ -11,13 +11,8 @@ import XCTest
 
 class CurrencyRemoteDataSourceTests: XCTestCase {
 	private let currencyModel = CurrencyModel(
-		remittanceCountry: "USD",
-		timestamp: "2022-02-23T00:00:00Z".convertToDate(of: "yyyy-MM-dd'T'HH:mm:ssZ")!,
-		recipientCoutries: [
-			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "KRW", mid: 1192.9398794964),
-			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "JPY", mid: 115.0967667032),
-			CurrencyModel.ChangedCurrencyModel(quoteCurrency: "PHP", mid: 51.3268409469)
-		])
+		 timestamp: Date(timeIntervalSince1970: 1545881647),
+		 quotes: CurrencyModel.ChangedCurrencyModel(krw: 1192.9398794964, jpy: 115.0967667032, php: 51.3268409469))
 	private let fixtureData = CurrencyModelFixture.data
 	
 	override func setUpWithError() throws {
